@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- General Environment values -->
+  <PropertyGroup Label="ServiceMacros">
+     <TempRoot>$(ProjectDir)</TempRoot>
+     <UsingQt5>0</UsingQt5>
+     <UsingWinsock>0</UsingWinsock>
+     <UsingOpenSSL>1</UsingOpenSSL>
+     <UsingJSMNLib>1</UsingJSMNLib>
+     <UsingHTTPLib>1</UsingHTTPLib>
+
+     <SolutionRootDirectory>$(ProjectDir)..\</SolutionRootDirectory>
+     <ExternalDirectory>$(SolutionRootDirectory)external\</ExternalDirectory>
+     <ExecutablesDirectory>$(SolutionRootDirectory)bin\</ExecutablesDirectory>
+     <VsDirectory>$(ProjectDir)</VsDirectory>
+     <TiqBuildScriptsDirectory>$(VsDirectory)build.tiq\</TiqBuildScriptsDirectory>
+     <TiqConfigDir>$(SolutionRootDirectory)config\tiq\</TiqConfigDir>
+     <LibTorrentDirectory>$(ExternalDirectory)libtorrent\</LibTorrentDirectory>
+     <LibTorrentInstallDirectory>$(LibTorrentDirectory)install\</LibTorrentInstallDirectory>
+     <LibTorrentIncludeDirectory>$(LibTorrentDirectory)include\</LibTorrentIncludeDirectory>
+     <SourcesDirectory>$(SolutionRootDirectory)src\tiq\</SourcesDirectory>
+     <SrcCommonDirectory>$(SolutionRootDirectory)src\common\</SrcCommonDirectory>
+     <ScriptsDirectory>$(SolutionRootDirectory)scripts\</ScriptsDirectory>
+     <ResourcesDirectory>$(SolutionRootDirectory)resources\</ResourcesDirectory>
+     <TmpBuildFilesRootDirectory>$(ProjectDir)obj\tiq\</TmpBuildFilesRootDirectory>
+     <BinariesDirectory>$(ProjectDir)bin\</BinariesDirectory>
+     <AppResourceFile>$(TmpBuildFilesRootDirectory)app_resource.qrc</AppResourceFile>
+  </PropertyGroup> 
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <CharacterSet>NotSet</CharacterSet>
+    <UseDebugLibraries>true</UseDebugLibraries>    
+  </PropertyGroup> 
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <CharacterSet>NotSet</CharacterSet>
+    <UseDebugLibraries>false</UseDebugLibraries>    
+  </PropertyGroup>   
+  <PropertyGroup Label="GeneralConfig">
+    <!-- <OutDir>$(BinariesDirectory)$(Platform)\$(Configuration)\</OutDir> --> 
+    
+    <OutDir>$(ExecutablesDirectory)</OutDir>
+    <IntDir>$(TmpBuildFilesRootDirectory)$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Label="LibtorrentBinaries">
+    <LibtorrentBinaries>$(ExternalDirectory)libtorrent\$(Configuration)\</LibtorrentBinaries>
+    <LibtorrentDllBinary>$(ExternalDirectory)libtorrent\$(Configuration)\torrent-rasterbar.dll</LibtorrentDllBinary>
+    <LibtorrentInstall>$(ExternalDirectory)libtorrent\install\</LibtorrentInstall>
+  </PropertyGroup>
+  <PropertyGroup Label="WinsockConfig" Condition="'$(UsingWinsock)'=='1'">
+    <WINSOCK_LIB_INCLUDED>wsock32.lib</WINSOCK_LIB_INCLUDED>
+  </PropertyGroup>
+
+  <PropertyGroup Label="OpenSslLibConfig" Condition="'$(UsingOpenSSL)'=='1'">
+    <PATH_OPENSSL_LIB_64_MD>$(OPENSSL_LIB)\VC\x64\MD</PATH_OPENSSL_LIB_64_MD>
+    <PATH_OPENSSL_LIB_64_MDd>$(OPENSSL_LIB)\VC\x64\MDd</PATH_OPENSSL_LIB_64_MDd>
+    <PATH_OPENSSL_LIB_64_MTd>$(OPENSSL_LIB)\VC\x64\MTd</PATH_OPENSSL_LIB_64_MTd>
+    <PATH_OPENSSL_LIB_64_MT>$(OPENSSL_LIB)\VC\x64\MT</PATH_OPENSSL_LIB_64_MT>
+
+    <LibCrypto_Lib_Static>libcrypto_static.lib</LibCrypto_Lib_Static>
+    <LibCrypto_Lib>libcrypto.lib</LibCrypto_Lib>
+    <LibSSL_Lib_Static>libssl_static.lib</LibSSL_Lib_Static>
+    <LibSSL_Lib>libssl.lib</LibSSL_Lib>
+    <OpenSSL_Defines>USING_OPENSSL</OpenSSL_Defines>
+    <OPENSSL_LIBS_INCLUDED>Crypt32.lib;$(LibCrypto_Lib_Static);$(LibSSL_Lib_Static)</OPENSSL_LIBS_INCLUDED>
+  </PropertyGroup>
+
+    <PropertyGroup Label="JSMNLibConfig" Condition="'$(UsingJSMNLib)'=='1'">
+      <JSMNLIB_RootDirectory>$(ExternalDirectory)\jsmn</JSMNLIB_RootDirectory>
+      <JSMN_Defines>JSMN_STATIC</JSMN_Defines>
+    </PropertyGroup>
+
+    <PropertyGroup Label="HTTPLibConfig" Condition="'$(UsingHTTPLib)'=='1'">
+      <HTTPLIB_RootDirectory>$(ExternalDirectory)\cpp-httplib</HTTPLIB_RootDirectory>
+      <HTTPLib_Defines>USING_HTTPLIB;CPPHTTPLIB_OPENSSL_SUPPORT</HTTPLib_Defines>
+    </PropertyGroup>
+
+
+    <PropertyGroup Label="TorrentsLib">
+      <TorrentsLib_Defines>USING_LIBTORRENTS</TorrentsLib_Defines>
+      
+      <PATH_LIBTORRENTS_LIB_64_MT>$(LibTorrentInstallDirectory)\MT</PATH_LIBTORRENTS_LIB_64_MT>
+      <PATH_LIBTORRENTS_LIB_64_MTd>$(LibTorrentInstallDirectory)\MTd</PATH_LIBTORRENTS_LIB_64_MTd>
+      <TorrentsLib_Include_Directory>$(LibTorrentIncludeDirectory)</TorrentsLib_Include_Directory>
+      <LIBTORRENTS_LIBS_INCLUDED>try_signal.lib;torrent-rasterbar.lib</LIBTORRENTS_LIBS_INCLUDED>
+      
+      <!-- Ensure LIBTORRENT_INCLUDE is defined before using it -->
+      <LIBTORRENT_INCLUDE Condition="'$(LibTorrentIncludeDirectory)' == ''">ERROR: LIBTORRENT_INCLUDE is not set.</LIBTORRENT_INCLUDE>
+    </PropertyGroup>
+
+    <!-- Display an error if LIBTORRENT_INCLUDE is not set -->
+    <Target Name="CheckLibtorrentInclude" BeforeTargets="Build">
+        <Error Condition="'$(LIBTORRENT_INCLUDE)' == ''" Text="Error: LIBTORRENT_INCLUDE is not set or empty. Please specify it in your project properties or environment variables." />
+    </Target>
+
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(BOOST_ROOT);$(HTTPLIB_RootDirectory);$(JSMNLIB_RootDirectory);$(TorrentsLib_Include_Directory);$(OPENSSL_INCLUDE);$(SourcesDirectory);$(SrcCommonDirectory);$(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(JSMN_Defines);$(HTTPLib_Defines);$(OpenSSL_Defines);CCC_STATIC_LINKING;_CRT_SECURE_NO_WARNINGS;CC_WINAPP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </ClCompile>
+    <!-- 
+        SUBSYSTEM; Console or Windows
+      -->
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Iphlpapi.lib;$(WINSOCK_LIB_INCLUDED);$(OPENSSL_LIBS_INCLUDED);$(LIBTORRENTS_LIBS_INCLUDED);shlwapi.lib;netapi32.lib;user32.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <ClCompile>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PreprocessorDefinitions>DEBUG;DEVELOPMENT;DEBUG_INFO;WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(PATH_LIBTORRENTS_LIB_64_MTd);$(PATH_OPENSSL_LIB_64_MTd);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>RELEASE;DEVELOPMENT;DEBUG_INFO;WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(PATH_LIBTORRENTS_LIB_64_MT);$(PATH_OPENSSL_LIB_64_MT);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='ReleasePList'">
+    <ClCompile>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>RELEASE;DEVELOPMENT;DEBUG_INFO;WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(PATH_LIBTORRENTS_LIB_64_MT);$(PATH_OPENSSL_LIB_64_MT);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>  
+
+</Project>
+
+
+
+
+

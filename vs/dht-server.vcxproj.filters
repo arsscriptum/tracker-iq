@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="$(SourcesDirectory)stdafx.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SourcesDirectory)main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SrcCommonDirectory)log.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SourcesDirectory)init.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SourcesDirectory)utils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SrcCommonDirectory)inireader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SrcCommonDirectory)ini.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SrcCommonDirectory)cmdline.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SourcesDirectory)version.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SourcesDirectory)config.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(SourcesDirectory)stdafx.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SourcesDirectory)utils.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SrcCommonDirectory)nowarns.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SrcCommonDirectory)macros.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SrcCommonDirectory)log.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SrcCommonDirectory)inireader.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SrcCommonDirectory)ini.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SrcCommonDirectory)cmdline.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ExternalDirectory)cpp-httplib\httplib.h">
+      <Filter>externals</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ExternalDirectory)jsmn\jsmn.h">
+      <Filter>externals</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SourcesDirectory)targetver.h" />
+    <ClInclude Include="$(SourcesDirectory)version.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SourcesDirectory)config.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(SolutionRootDirectory)dhtsrv.md">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="$(TiqBuildScriptsDirectory)Build.bat" />
+    <None Include="$(TiqBuildScriptsDirectory)buildcfg.ini" />
+    <None Include="$(DhtdConfigDir)dhtd.ini">
+      <Filter>config</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{daa18beb-7c2b-4514-aa67-8de6be91394a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="headers">
+      <UniqueIdentifier>{7fb69ddf-62c7-497f-b760-847508820dbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals">
+      <UniqueIdentifier>{72060915-c6de-4829-82b0-b5f39533cbc3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="config">
+      <UniqueIdentifier>{ddf06415-9769-47a3-a421-37943b9ff80b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc">
+      <UniqueIdentifier>{487768da-44a9-42fb-8b9a-de65a4ef6b60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scripts">
+      <UniqueIdentifier>{ace2d845-a8d7-4563-9419-4971ca263454}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res">
+      <UniqueIdentifier>{f4fc18a3-f2f0-4b2c-b034-49fda72ed8d6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="$(SourcesDirectory)resources.rc">
+      <Filter>res</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
