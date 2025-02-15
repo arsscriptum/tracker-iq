@@ -198,14 +198,17 @@ bool Config::ValidateConfigChecksum(const std::string& configPath) {
 
 void Config::Defaults() {
 
-    _version = 1;
     _enable_ipv6 = false;
     _enable_outgoing_utp = true;
     _enable_incoming_utp = true;
-    _udp_port = 6881;
-    _bootstrap_nodes = "";
-    _listen_address = "";
 
+    _user_agent = "";
+    _client_name = "";
+
+    _peer_fingerprint = "";
+    _bootstrap_nodes = "";
+    _outgoing_ifaces = "";
+    _listen_ifaces = "";
 
     _enable_console = false;
     _enable_logfile = false;
@@ -215,9 +218,6 @@ void Config::Defaults() {
     _debug_pause = 0;
     _exit_pause = 0;
     _filePath = "";
-#ifdef __TIQ_IMPL__
-    _tracker_type = TrackerType::UDP;
-#endif
     _initialized = false;
 }
 
@@ -229,17 +229,16 @@ bool Config::ParseConfig(const std::string& configPath) {
         return false;
     }
 
-    LOG_TRACE("parse_config", "Config loaded from %s. Version %d.",
-        configPath.c_str(), reader.GetInteger("general", "version", 1));
 
-    _version = reader.GetInteger("general", "version", 1);
+    _user_agent = reader.Get("network", "user_agent", "");
+    _client_name = reader.Get("network", "client_name", "");
 
-    _enable_ipv6 = reader.GetBoolean("network", "enable_ipv6", false);;
-    _enable_outgoing_utp = reader.GetBoolean("network", "enable_outgoing_utp", true);;
-    _enable_incoming_utp = reader.GetBoolean("network", "enable_incoming_utp", true);;
-    _udp_port = reader.GetInteger("network", "udp_port", 6881);;
+    _peer_fingerprint = reader.Get("network", "peer_fingerprint", "");
     _bootstrap_nodes = reader.Get("network", "bootstrap_nodes", "");
-    _listen_address = reader.Get("network", "listen_address", "0.0.0.0");
+    _outgoing_ifaces = reader.Get("network", "_outgoing_ifaces", "");
+    _listen_ifaces = reader.Get("network", "listen_ifaces", "0");
+
+
     _enable_console = reader.GetBoolean("log", "console", false);
     _enable_logfile = reader.GetBoolean("log", "file", false);
     _logfile = resolveEnvVariables(reader.Get("log", "path", ""));
@@ -253,12 +252,6 @@ bool Config::ParseConfig(const std::string& configPath) {
     _tracker_type  = string_to_tracker_type(CONFIG.getTrackerTypeString());
 #endif
     return _initialized;
-}
-
-
-// Getter for [general]
-unsigned int Config::getVersion() const {
-    return _version;
 }
 
 // Getters for [log]
@@ -296,12 +289,22 @@ bool Config::net_incoming_utp() const  {
 bool Config::net_outgoing_utp() const  {
     return _enable_outgoing_utp;
 }
-int Config::net_udp_port() const  {
-    return _udp_port;
+std::string Config::net_user_agent() const {
+    return _user_agent;
+}
+
+std::string Config::net_client_name() const {
+    return _client_name;
+}
+std::string Config::net_peer_fingerprint() const {
+    return _peer_fingerprint;
 }
 std::string Config::net_bootstrap_nodes() const {
     return _bootstrap_nodes;
 }
-std::string Config::net_listen_address() const {
-    return _listen_address;
+std::string Config::net_listen_ifaces() const {
+    return _listen_ifaces;
+}
+std::string Config::net_outgoing_ifaces() const {
+    return _outgoing_ifaces;
 }

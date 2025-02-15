@@ -180,7 +180,7 @@ void __cdecl LogConfigFunc(const char* format, ...)
 	*p++ = '\n';
 	*p = '\0';
 
-	EndOfLineEscapeTag FormatDebug1{ CONSOLE_COLOR_BKGRND_MAGENTA_WHITE, ANSI_TEXT_COLOR_RESET };
+	EndOfLineEscapeTag FormatDebug1{ ANSI_TEXT_COLOR_BLUE_BRIGHT, ANSI_TEXT_COLOR_RESET };
 	EndOfLineEscapeTag FormatDebug2{ CONSOLE_COLOR_CYAN, ANSI_TEXT_COLOR_RESET };
 
 	std::clog << FormatDebug1 << "[configuration] " << buf;

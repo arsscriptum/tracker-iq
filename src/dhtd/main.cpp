@@ -14,8 +14,6 @@
 #include "Shlwapi.h"
 #include "log.h"
 
-
-
 #include <codecvt>
 #include <locale>
 #include <vector>
@@ -84,13 +82,12 @@ int log_config_values() {
 
 	try {
 		Config& config = Config::getInstance();
-
-		CONFIG_LOG("Version: %d", config.getVersion());
-		CONFIG_LOG("ipv6 enabled %s", config.net_ipv6_enabled() ? "true" : "false");
-		CONFIG_LOG("incoming utp %s", config.net_incoming_utp() ? "true" : "false");
-		CONFIG_LOG("outgoing_utp %s", config.net_outgoing_utp() ? "true" : "false");
-		CONFIG_LOG("udp port %s", config.net_udp_port());
-		CONFIG_LOG("bootstrap nodes %s", config.net_bootstrap_nodes().c_str());
+		CONFIG_LOG("ipv6_enabled:        %s", CONFIG.net_ipv6_enabled() ? "true" : "false");
+		CONFIG_LOG("enable_incoming_utp: %s", CONFIG.net_incoming_utp() ? "true" : "false");
+		CONFIG_LOG("enable_outgoing_utp: %s", CONFIG.net_outgoing_utp() ? "true" : "false");
+		CONFIG_LOG("Listen interface   \"%s\"", CONFIG.net_listen_ifaces().c_str());
+		CONFIG_LOG("Listen interface   \"%s\"", CONFIG.net_outgoing_ifaces().c_str());
+		CONFIG_LOG("bootstrap_nodes:   \"%s\"", CONFIG.net_bootstrap_nodes().c_str());
 
 		CONFIG_LOG("Console Logging: %s", config.isConsoleEnabled() ? "Enabled" : "Disabled");
 		CONFIG_LOG("Log File: %s", config.getLogFile().c_str());
@@ -145,8 +142,6 @@ int main(int argc, TCHAR** argv, TCHAR envp)
 	if (optQuiet && optVerbose) {
 		COUTCS("Warning: Quiet and Verbose: Verbose superceed Quiet...");
 	}
-	APP_MSG_LOG("app version: %d.%d.%d", dhtd::version::major, dhtd::version::minor, dhtd::version::build);
-	
 
 	if (optNoBanner == false) {
 		banner();
@@ -189,44 +184,32 @@ int main(int argc, TCHAR** argv, TCHAR envp)
 
 	log_config_values();
 
-	unsigned int udp_port = CONFIG.net_udp_port();
-	bool ipv6_enabled = CONFIG.net_ipv6_enabled();
-	bool incoming_utp = CONFIG.net_incoming_utp();
-	bool outgoing_utp = CONFIG.net_outgoing_utp();
-	std::string listen_address = CONFIG.net_listen_address();
-	std::string dht_nodes = CONFIG.net_bootstrap_nodes();
+	INFOLOG("=======================================");
+	NOTICELOG("libtorrent settings");
+	INFOLOG("ipv6_enabled:        %s", CONFIG.net_ipv6_enabled() ?"true":"false");
+	INFOLOG("enable_incoming_utp: %s", CONFIG.net_incoming_utp() ? "true" : "false");
+	INFOLOG("enable_outgoing_utp: %s", CONFIG.net_outgoing_utp() ? "true" : "false");
+	INFOLOG("Listen interface   \"%s\"", CONFIG.net_listen_ifaces().c_str());
+	INFOLOG("Listen interface   \"%s\"", CONFIG.net_outgoing_ifaces().c_str());
+	INFOLOG("bootstrap_nodes:   \"%s\"", CONFIG.net_bootstrap_nodes().c_str());
+	INFOLOG("=======================================");
 
-	std::string str_listen_iface = listen_address + ":" + std::to_string(udp_port);
-	if (ipv6_enabled) {
-		str_listen_iface += ",[::]:" + std::to_string(udp_port);
-	}
-
-	
 
 	lt::settings_pack settings;
 	//settings.set_bool(lt::settings_pack::enable_ipv6, false);
 	//settings.set_int(lt::settings_pack::udp_port, 6881);  // Change to an available port
-	settings.set_bool(lt::settings_pack::enable_outgoing_utp, outgoing_utp);
-	settings.set_bool(lt::settings_pack::enable_incoming_utp, incoming_utp);
-	settings.set_str(lt::settings_pack::listen_interfaces, str_listen_iface.c_str());
+	settings.set_bool(lt::settings_pack::enable_outgoing_utp, CONFIG.net_outgoing_utp());
+	settings.set_bool(lt::settings_pack::enable_incoming_utp, CONFIG.net_incoming_utp());
+	settings.set_str(lt::settings_pack::listen_interfaces, "10.0.0.138:6881");
+	//settings.set_str(lt::settings_pack::listen_interfaces, CONFIG.net_listen_ifaces());
 
 	// Correctly formatted bootstrap nodes (no spaces after commas)
 
 	// Enable DHT before setting bootstrap nodes
 	settings.set_bool(lt::settings_pack::enable_dht, true);
 
-	
-	settings.set_str(lt::settings_pack::dht_bootstrap_nodes, dht_nodes);
-
-	INFOLOG("=======================================");
-	NOTICELOG("libtorrent settings");
-	INFOLOG("ipv6_enabled:        %s", ipv6_enabled ?"true":"false");
-	INFOLOG("enable_incoming_utp: %s", incoming_utp ? "true" : "false");
-	INFOLOG("enable_outgoing_utp: %s", outgoing_utp ? "true" : "false");
-	INFOLOG("udp_port:            %d", udp_port);
-	INFOLOG("Listen interface   \"%s\"", str_listen_iface.c_str());
-	INFOLOG("bootstrap_nodes:   \"%s\"", dht_nodes.c_str());
-	INFOLOG("=======================================");
+	settings.set_str(lt::settings_pack::dht_bootstrap_nodes, "router.bittorrent.com:6881,router.utorrent.com:6881,dht.transmissionbt.com:6881");
+	//settings.set_str(lt::settings_pack::dht_bootstrap_nodes, CONFIG.net_bootstrap_nodes());
 	lt::session s(settings);
 
 	// Start processing DHT alerts

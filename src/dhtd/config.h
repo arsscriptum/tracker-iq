@@ -32,22 +32,16 @@ public:
     void Defaults();
     bool SetConfigChecksum(const std::string& configPath);
 
-
-    // Getters for config values
-    unsigned int getVersion() const;
-
-    /* enable_ipv6 = false
-enable_outgoing_utp = true 
-enable_incoming_utp = true 
-udp_port = 6881
-bootstrap_nodes = router.bittorrent.com:6881,router.utorrent.com:6881,dht.transmissionbt.com:6881
-
-*/
     bool net_ipv6_enabled() const;
     bool net_incoming_utp() const;
     bool net_outgoing_utp() const;
-    int net_udp_port() const;
-    std::string net_listen_address() const;
+
+    std::string net_user_agent() const;
+    std::string net_client_name() const;
+    std::string net_peer_fingerprint() const;
+
+    std::string net_listen_ifaces() const;
+    std::string net_outgoing_ifaces() const;
     std::string net_bootstrap_nodes() const;
 
     // Logging
@@ -74,34 +68,64 @@ private:
 
     std::string _filePath;
 
-    // [general]
-    unsigned int _version;
-
-    // [trackers]
-    unsigned int _timeout;
-    unsigned int _num_want;
-    std::string  _type;
-    double _weight_peers;
-    double _weight_ping;
-
-    // [log]
-    bool _enable_console;
-    bool _enable_logfile;
-    std::string _logfile;
-
     // network 
+
     bool _enable_ipv6;
     bool _enable_outgoing_utp;
     bool _enable_incoming_utp;
-    int _udp_port;
+
+    // this is the client identification to the tracker. The recommended
+    // format of this string is: "client-name/client-version
+    // libtorrent/libtorrent-version". This name will not only be used when
+    // making HTTP requests, but also when sending extended headers to
+    // peers that support that extension. It may not contain \r or \n
+    std::string _user_agent;
+    // this is the client name and version identifier sent to peers in the
+    // handshake message. If this is an empty string, the user_agent is
+    // used instead. This string must be a UTF-8 encoded unicode string.
+    std::string _client_name;
+
+
+    // this is the fingerprint for the client. It will be used as the
+    // prefix to the peer_id. If this is 20 bytes (or longer) it will be
+    // truncated to 20 bytes and used as the entire peer-id
+    //
+    // There is a utility function, generate_fingerprint() that can be used
+    // to generate a standard client peer ID fingerprint prefix.
+    std::string _peer_fingerprint;
+    // This is a comma-separated list of IP port-pairs. They will be added
+    // to the DHT node (if it's enabled) as back-up nodes in case we don't
+    // know of any.
+    //
+    // Changing these after the DHT has been started may not have any
+    // effect until the DHT is restarted.
     std::string _bootstrap_nodes;
-    std::string _listen_address;
+
+    // This controls which IP address outgoing TCP peer connections are bound
+    // to, in addition to controlling whether such connections are also
+    // bound to a specific network interface/adapter (*bind-to-device*).
+    //
+    // This string is a comma-separated list of IP addresses and
+    // interface names. An empty string will not bind TCP sockets to a
+    // device, and let the network stack assign the local address.
+    std::string _outgoing_ifaces;
+
+    // a comma-separated list of (IP or device name, port) pairs. These are
+    // the listen ports that will be opened for accepting incoming uTP and
+    // TCP peer connections. These are also used for *outgoing* uTP and UDP
+    // tracker connections and DHT nodes.
+    std::string _listen_ifaces;
 
     // [debug]   
     bool _debug_enabled;
     unsigned int _debug_pause;
     unsigned int _exit_pause;
 
+    // [log]
+    bool _enable_console;
+    bool _enable_logfile;
+
+    std::string _logfile;
     // Function to replace $ENV:VAR with its value
     static std::string resolveEnvVariables(const std::string& value);
     // Function to compute checksum

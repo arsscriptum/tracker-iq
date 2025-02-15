@@ -160,8 +160,8 @@ void __cdecl ConsoleDebug(std::string color, const char* format, ...);
 # define COUTGS( ... )   { ConsoleVerboseOut(CONSOLE_COLOR_GREEN_BRIGHT,  __VA_ARGS__ );  }	
 # define COUTG( ... )   { ConsoleVerboseOut(CONSOLE_COLOR_GREEN,  __VA_ARGS__ );  }	
 
-# define COUTBANNER_1( ... )   { ConsoleOut(ANSI_TEXT_COLOR_BLUE,  __VA_ARGS__ );  }	
-# define COUTBANNER_2( ... )   { ConsoleOut(ANSI_TEXT_COLOR_WHITE_BRIGHT,  __VA_ARGS__ );  }	
+# define COUTBANNER_1( ... )   { ConsoleOut(CONSOLE_COLOR_CYAN_BRIGHT,  __VA_ARGS__ );  }	
+# define COUTBANNER_2( ... )   { ConsoleOut(ANSI_TEXT_COLOR_WHITE,  __VA_ARGS__ );  }	
 # define INFOLOG(... ) { LogInfoFunc( __VA_ARGS__ ); }
 # define NOTICELOG(... ) { LogNoticeFunc( __VA_ARGS__ ); }
 # define CONFIG_LOG(... ) { LogConfigFunc( __VA_ARGS__ ); }

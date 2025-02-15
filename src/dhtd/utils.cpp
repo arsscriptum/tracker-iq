@@ -28,6 +28,7 @@
 #include <iterator>
 #include <regex>
 #include <filesystem>
+#include "version.h"
 
 #include <sstream>
 #include <cstdlib>
@@ -106,7 +107,9 @@ string dump_params(const Params& params) {
 
 void banner() {
 	std::wcout << std::endl;
-	COUTBANNER_1("dhtd v2.1 - custom DHT server using libtorrent-rasterbar\n");
+	std::string title = "dhtd v" + dhtd::version::GetAppVersion() + " - custom DHT server using libtorrent-rasterbar\n";
+	COUTBANNER_1(title.c_str());
+
 	COUTBANNER_2("Built on %s\n", __TIMESTAMP__);
 	COUTBANNER_2("Copyright (C) 2000-2021 Guillaume Plante\n");
 	std::wcout << std::endl;

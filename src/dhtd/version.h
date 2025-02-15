@@ -33,7 +33,7 @@ namespace dhtd {
 
 
 		// Function to return version as a string
-		std::string version::GetAppVersion(bool include_sha = false) {
+		static std::string version::GetAppVersion(bool include_sha = false) {
 			std::ostringstream oss;
 			oss << major << "." << minor << "." << build << "." << rev;
 
