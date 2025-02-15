@@ -1,0 +1,3 @@
+[submodule "external/libtorrent"]
+	path = external/libtorrent
+	url = https://github.com/arsscriptum/libtorrent-iq.git
