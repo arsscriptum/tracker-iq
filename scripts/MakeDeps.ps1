@@ -74,7 +74,7 @@ try{
     Write-Host "$ExternalPath" -f DarkGreen
 
     Write-Host "LibTorrentPath " -f  DarkYellow -NoNewLine
-    $LibTorrentPath = (Resolve-Path -Path "$ExternalPath\libtorrent").Path
+    $LibTorrentPath = (Resolve-Path -Path "$ExternalPath\libtorrent-iq").Path
     Write-Host "$LibTorrentPath" -f DarkGreen
 
     Write-Host "ProjectPath " -f  DarkYellow -NoNewLine
