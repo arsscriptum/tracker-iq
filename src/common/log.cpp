@@ -47,16 +47,16 @@ void __cdecl LogNoticeFunc(const char* format, ...)
 	int textLength = text.size();
 
 	// Build horizontal border (width = text length + 2 for padding)
-	std::string horizontal(textLength + 2, '═');
+	std::string horizontal(textLength + 2, '=');
 
 	// Construct the three lines of the box using the specified box-drawing characters
-	std::string topBorder = "╔" + horizontal + "╗";
-	std::string middleLine = "║ " + text + " ║";
-	std::string bottomBorder = "╚" + horizontal + "╝";
+	std::string topBorder = "+" + horizontal + "+";
+	std::string middleLine = "| " + text + " |";
+	std::string bottomBorder = "+" + horizontal + "+";
 
 	// Output the box with the border in RED and the text in YELLOW.
 	std::clog << ANSI_TEXT_COLOR_RED << topBorder << ANSI_TEXT_COLOR_RESET << "\r\n"
-		<< ANSI_TEXT_COLOR_RED << "║ " << ANSI_TEXT_COLOR_YELLOW << text << ANSI_TEXT_COLOR_RED << " ║" << ANSI_TEXT_COLOR_RESET << "\r\n"
+		<< ANSI_TEXT_COLOR_RED << "| " << ANSI_TEXT_COLOR_YELLOW << text << ANSI_TEXT_COLOR_RED << " |" << ANSI_TEXT_COLOR_RESET << "\r\n"
 		<< ANSI_TEXT_COLOR_RED << bottomBorder << ANSI_TEXT_COLOR_RESET << "\r\n";
 
 }
