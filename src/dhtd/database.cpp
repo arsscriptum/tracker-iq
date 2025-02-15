@@ -11,6 +11,9 @@
 
 #include "stdafx.h"
 #include "Database.h"
+
+#ifndef NO_DATABASE_IMPL
+
 #include <iostream>
 
 Database::Database(const std::string &dbPath)
@@ -78,3 +81,5 @@ bool Database::query(const std::string &sql,
     }
     return true;
 }
+
+#endif

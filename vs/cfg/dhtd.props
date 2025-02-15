@@ -14,7 +14,7 @@
      <ExternalDirectory>$(SolutionRootDirectory)external\</ExternalDirectory>
      <SQLiteDirectory>$(ExternalDirectory)sqlite\</SQLiteDirectory>
      <SQLiteIncludeDirectory>$(SQLiteDirectory)src\</SQLiteIncludeDirectory>
-     <SQLiteLibraryDirectory>$(SQLiteDirectory)sqlite\bin\dll-win-x64\</SQLiteLibraryDirectory>
+     <SQLiteLibraryDirectory>$(SQLiteDirectory)bin\dll-win-x64\</SQLiteLibraryDirectory>
      <ExecutablesDirectory>$(SolutionRootDirectory)bin\</ExecutablesDirectory>
      <VsDirectory>$(ProjectDir)</VsDirectory>
      <DhtdBuildScriptsDirectory>$(VsDirectory)build.dhtd\</DhtdBuildScriptsDirectory>
@@ -97,8 +97,8 @@
     <ClCompile>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(BOOST_ROOT);$(HTTPLIB_RootDirectory);$(JSMNLIB_RootDirectory);$(TorrentsLib_Include_Directory);$(OPENSSL_INCLUDE);$(SrcCommonDirectory);$(SourcesDirectory);$(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>$(JSMN_Defines);$(HTTPLib_Defines);$(OpenSSL_Defines);CCC_STATIC_LINKING;_CRT_SECURE_NO_WARNINGS;CC_WINAPP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(BOOST_ROOT);$(HTTPLIB_RootDirectory);$(JSMNLIB_RootDirectory);$(TorrentsLib_Include_Directory);$(OPENSSL_INCLUDE);$(SrcCommonDirectory);$(SourcesDirectory);$(SQLiteIncludeDirectory);$(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USE_SQLITE3;NO_DATABASE_IMPL;$(JSMN_Defines);$(HTTPLib_Defines);$(OpenSSL_Defines);CCC_STATIC_LINKING;_CRT_SECURE_NO_WARNINGS;CC_WINAPP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </ClCompile>
     <!-- 
@@ -106,7 +106,7 @@
       -->
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SQLiteLibraryDirectory);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Iphlpapi.lib;$(WINSOCK_LIB_INCLUDED);$(OPENSSL_LIBS_INCLUDED);$(LIBTORRENTS_LIBS_INCLUDED);shlwapi.lib;netapi32.lib;user32.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>

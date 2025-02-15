@@ -98,12 +98,6 @@ int log_config_values() {
 		CONFIG_LOG("Debug Mode: %s", config.isDebugEnabled() ? "Enabled" : "Disabled");
 		CONFIG_LOG("Debug Pause: %d seconds", config.getDebugPause());
 		CONFIG_LOG("Exit Pause: %d seconds", config.getExitPause());
-
-		if (CONFIG.isDebugEnabled()) {
-			COUTDBG("=============================");
-			COUTDBG("DEBUG ENABLED");
-		}
-
 	}
 	catch (const std::exception& e) {
 		LOG_TRACE("main", "Exception occurred: %s", e.what());
@@ -200,47 +194,43 @@ int main(int argc, TCHAR** argv, TCHAR envp)
 	bool incoming_utp = CONFIG.net_incoming_utp();
 	bool outgoing_utp = CONFIG.net_outgoing_utp();
 	std::string listen_address = CONFIG.net_listen_address();
+	std::string dht_nodes = CONFIG.net_bootstrap_nodes();
 
 	std::string str_listen_iface = listen_address + ":" + std::to_string(udp_port);
 	if (ipv6_enabled) {
 		str_listen_iface += ",[::]:" + std::to_string(udp_port);
 	}
 
-	INFOLOG("Listen interface set to: %s", str_listen_iface.c_str());
-
-
-
-
-
-	lt::settings_pack settings;
-
-	//settings.set_int(lt::settings_pack::udp_port, 6881);  // Change to an available port
-	settings.set_bool(lt::settings_pack::enable_outgoing_utp, true);
-	settings.set_bool(lt::settings_pack::enable_incoming_utp, true);
-
-	//settings.set_bool(lt::settings_pack::enable_ipv6, false);
 	
 
-
-	INFOLOG( "Bind to all available interfaces (IPv4 & IPv6)");
-	settings.set_str(lt::settings_pack::listen_interfaces, "[::]:6881,0.0.0.0:6881");
+	lt::settings_pack settings;
+	//settings.set_bool(lt::settings_pack::enable_ipv6, false);
+	//settings.set_int(lt::settings_pack::udp_port, 6881);  // Change to an available port
+	settings.set_bool(lt::settings_pack::enable_outgoing_utp, outgoing_utp);
+	settings.set_bool(lt::settings_pack::enable_incoming_utp, incoming_utp);
+	settings.set_str(lt::settings_pack::listen_interfaces, str_listen_iface.c_str());
 
 	// Correctly formatted bootstrap nodes (no spaces after commas)
-	std::string bootstrap_nodes_addrx = "router.bittorrent.com:6881,router.utorrent.com:6881,dht.transmissionbt.com:6881";
 
 	// Enable DHT before setting bootstrap nodes
 	settings.set_bool(lt::settings_pack::enable_dht, true);
 
-	INFOLOG( "dht_bootstrap_nodes: %s", bootstrap_nodes_addrx.c_str());
-	settings.set_str(lt::settings_pack::dht_bootstrap_nodes, bootstrap_nodes_addrx);
+	
+	settings.set_str(lt::settings_pack::dht_bootstrap_nodes, dht_nodes);
 
+	INFOLOG("=======================================");
+	NOTICELOG("libtorrent settings");
+	INFOLOG("ipv6_enabled:        %s", ipv6_enabled ?"true":"false");
+	INFOLOG("enable_incoming_utp: %s", incoming_utp ? "true" : "false");
+	INFOLOG("enable_outgoing_utp: %s", outgoing_utp ? "true" : "false");
+	INFOLOG("udp_port:            %d", udp_port);
+	INFOLOG("Listen interface   \"%s\"", str_listen_iface.c_str());
+	INFOLOG("bootstrap_nodes:   \"%s\"", dht_nodes.c_str());
+	INFOLOG("=======================================");
 	lt::session s(settings);
-	INFOLOG( "", "Custom DHT Server is running on UDP port %d...", 6881);
 
 	// Start processing DHT alerts
-	INFOLOG( "Start processing DHT alerts, %d", "0");
 	process_alerts(s);
-
 
 	if (CONFIG.isDebugEnabled()) {
 		DEJA_CONSOLE_WRITE("DO YOU WANT TO SLEEP ?");

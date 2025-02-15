@@ -23,6 +23,46 @@ extern bool g_is_verbose;
 
 
 
+void __cdecl LogNoticeFunc(const char* format, ...)
+{
+	const std::string CONSOLE_COLOR_RED = "\u001b[31m";
+	char    buf[4096], * p = buf;
+	va_list args;
+	int     n;
+
+	va_start(args, format);
+	n = vsnprintf(p, sizeof buf - 3, format, args); // buf-3 is room for CR/LF/NUL
+	va_end(args);
+
+	p += (n < 0) ? sizeof buf - 3 : n;
+
+	while (p > buf && isspace(p[-1]))
+		*--p = '\0';
+
+	*p++ = '\r';
+	*p++ = '\n';
+	*p = '\0';
+
+	std::string text(buf);
+	int textLength = text.size();
+
+	// Build horizontal border (width = text length + 2 for padding)
+	std::string horizontal(textLength + 2, '═');
+
+	// Construct the three lines of the box using the specified box-drawing characters
+	std::string topBorder = "╔" + horizontal + "╗";
+	std::string middleLine = "║ " + text + " ║";
+	std::string bottomBorder = "╚" + horizontal + "╝";
+
+	// Output the box with the border in RED and the text in YELLOW.
+	std::clog << ANSI_TEXT_COLOR_RED << topBorder << ANSI_TEXT_COLOR_RESET << "\r\n"
+		<< ANSI_TEXT_COLOR_RED << "║ " << ANSI_TEXT_COLOR_YELLOW << text << ANSI_TEXT_COLOR_RED << " ║" << ANSI_TEXT_COLOR_RESET << "\r\n"
+		<< ANSI_TEXT_COLOR_RED << bottomBorder << ANSI_TEXT_COLOR_RESET << "\r\n";
+
+}
+
+
+
 void __cdecl ErrorDescFunc(const char* channel, const char* format, ...)
 {
 	const std::string CONSOLE_COLOR_RED = "\u001b[31m";

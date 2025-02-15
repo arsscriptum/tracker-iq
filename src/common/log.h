@@ -133,6 +133,7 @@ void __cdecl ConsoleTitle(const char *format, std::string color = CYAN_UNDERLINE
 void __cdecl ConsoleInfo(const char *format, std::string color = WHITE_UNDERLINED_B);
 void __cdecl LogConfigFunc(const char* pFormat, ...);
 void __cdecl LogInfoFunc(const char* pFormat, ...); 
+void __cdecl LogNoticeFunc(const char* pFormat, ...);
 void __cdecl LogAppMsg(const char* pFormat, ...);
 void __cdecl LogInfoFunc2(const char* pChannel, const char* pFormat, ...);
 void __cdecl DebugTraceFunc(const char* pChannel, const char* pFormat, ...);
@@ -162,6 +163,7 @@ void __cdecl ConsoleDebug(std::string color, const char* format, ...);
 # define COUTBANNER_1( ... )   { ConsoleOut(ANSI_TEXT_COLOR_BLUE,  __VA_ARGS__ );  }	
 # define COUTBANNER_2( ... )   { ConsoleOut(ANSI_TEXT_COLOR_WHITE_BRIGHT,  __VA_ARGS__ );  }	
 # define INFOLOG(... ) { LogInfoFunc( __VA_ARGS__ ); }
+# define NOTICELOG(... ) { LogNoticeFunc( __VA_ARGS__ ); }
 # define CONFIG_LOG(... ) { LogConfigFunc( __VA_ARGS__ ); }
 # define APP_MSG_LOG(... ) { LogAppMsg( __VA_ARGS__ ); }
 # define INFOLOG2(c,fmt, ... ) { LogInfoFunc2(c,fmt ,  __VA_ARGS__ ); }

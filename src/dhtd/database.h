@@ -11,9 +11,13 @@
 #ifndef __SQLITE_DATABASE_H__
 #define __SQLITE_DATABASE_H__
 
+#ifndef NO_DATABASE_IMPL
+
 #include <string>
 #include <sqlite3.h>
 #include <functional>
+
+
 
 class Database {
 public:
@@ -47,5 +51,7 @@ private:
     std::string m_dbPath;  // Path to the SQLite database file
     sqlite3 *m_db;         // SQLite database handle
 };
+
+#endif 
 
 #endif//__SQLITE_DATABASE_H__

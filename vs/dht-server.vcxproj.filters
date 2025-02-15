@@ -31,6 +31,9 @@
     <ClCompile Include="$(SourcesDirectory)config.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="$(SourcesDirectory)database.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SourcesDirectory)stdafx.h">
@@ -63,11 +66,16 @@
     <ClInclude Include="$(ExternalDirectory)jsmn\jsmn.h">
       <Filter>externals</Filter>
     </ClInclude>
-    <ClInclude Include="$(SourcesDirectory)targetver.h" />
     <ClInclude Include="$(SourcesDirectory)version.h">
       <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="$(SourcesDirectory)config.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SourcesDirectory)database.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SourcesDirectory)targetver.h">
       <Filter>headers</Filter>
     </ClInclude>
   </ItemGroup>
@@ -75,8 +83,6 @@
     <None Include="$(SolutionRootDirectory)dhtsrv.md">
       <Filter>doc</Filter>
     </None>
-    <None Include="$(TiqBuildScriptsDirectory)Build.bat" />
-    <None Include="$(TiqBuildScriptsDirectory)buildcfg.ini" />
     <None Include="$(DhtdConfigDir)dhtd.ini">
       <Filter>config</Filter>
     </None>
@@ -84,6 +90,12 @@
       <Filter>scripts</Filter>
     </None>
     <None Include="..\scripts\prepare-build.bat">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="$(TiqBuildScriptsDirectory)buildcfg.ini">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="$(TiqBuildScriptsDirectory)Build.bat">
       <Filter>scripts</Filter>
     </None>
   </ItemGroup>

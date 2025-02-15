@@ -123,6 +123,7 @@ copy $(DhtdConfigDir)*.ini  $(ExecutablesDirectory) </Command>
     <ClInclude Include="$(SourcesDirectory)config.h" />
     <ClInclude Include="$(SourcesDirectory)utils.h" />
     <ClInclude Include="$(SourcesDirectory)version.h" />
+    <ClInclude Include="$(SourcesDirectory)database.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SrcCommonDirectory)cmdline.cpp" />
@@ -135,6 +136,7 @@ copy $(DhtdConfigDir)*.ini  $(ExecutablesDirectory) </Command>
     <ClCompile Include="$(SrcCommonDirectory)inireader.cpp" />
     <ClCompile Include="$(SourcesDirectory)config.cpp" />
     <ClCompile Include="$(SourcesDirectory)version.cpp" />
+    <ClCompile Include="$(SourcesDirectory)database.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(TiqBuildScriptsDirectory)Build.bat" />
