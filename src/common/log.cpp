@@ -18,11 +18,6 @@
 #include <wtypes.h>
 
 
-
-extern bool g_is_verbose;
-
-
-
 void __cdecl LogNoticeFunc(const char* format, ...)
 {
 	const std::string CONSOLE_COLOR_RED = "\u001b[31m";
@@ -106,7 +101,7 @@ void __cdecl DebugTraceFunc(const char* channel, const char* format, ...)
 	
 	LOG_TRACE(channel, "%s", buf);
 
-	if (CONFIG.isDebugEnabled()) {
+	if (CONFIG.debug_mode_enabled()) {
 		
 		EndOfLineEscapeTag FormatDebug1{ RED_UNDERLINED, ANSI_TEXT_COLOR_RESET };
 		EndOfLineEscapeTag FormatDebug2{ CONSOLE_COLOR_BKGRND_WHITE_GREEN, ANSI_TEXT_COLOR_RESET };
@@ -229,7 +224,7 @@ void __cdecl LogInfoFunc2(const char* channel, const char* format, ...)
 
 void __cdecl ConsoleVerboseOut(std::string color, const char* format, ...)
 {
-	if (!g_is_verbose) { return; }
+	//if (!g_is_verbose) { return; }
 	char    buf[4096], * p = buf;
 	va_list args;
 	int     n;
@@ -331,7 +326,7 @@ void __cdecl ConsoleOutNoRl(std::string color, const char *format, ...)
 
 void __cdecl ConsoleDebug(std::string color, const char* format, ...)
 {
-	if (!CONFIG.isDebugEnabled()) {
+	if (!CONFIG.debug_mode_enabled()) {
 		return;
 	}
 	char    buf[4096], * p = buf;

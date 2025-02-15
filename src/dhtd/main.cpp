@@ -50,11 +50,11 @@
 
 #include <boost/asio/ip/address.hpp>
 
-
+#ifndef DEJA_DISABLED
 #include "DejaLib.h"
+#endif
 
-bool g_is_verbose = false;
-unsigned  int g_default_num_want = 1;
+
 using namespace std;
 using namespace std::chrono_literals;
 
@@ -62,46 +62,35 @@ using namespace std::chrono_literals;
 #pragma message( "Last modified on " __TIMESTAMP__ )
 
 
-// Struct to store DHT Reply Data
+
+// ===============================================
+// DHTReplyData : Struct to store DHT Reply Data
+// ===============================================
 struct DHTReplyData {
 	std::string url;
 	int num_peers;
 };
 
+// ===============================================
 // Global storage for DHT replies
+// ===============================================
 std::map<int, DHTReplyData> dht_replies;
 int dht_reply_id = 0;  // Auto-incrementing ID
+
+// ===============================================
+// DHTReplyData Accessors 
+// ===============================================
+int get_dht_reply_id_by_url(const std::string& url);
+std::string get_dht_reply_url_by_id(int id);
+
 
 
 bool pre_process_alert(const lt::alert* a);
 void process_alerts(lt::session& s);
-int get_dht_reply_id_by_url(const std::string& url);
-std::string get_dht_reply_url_by_id(int id);
+int dump_config_values();
+bool init_settings_from_cfgfile(lt::settings_pack& settings);
+bool init_settings_hardcoded(lt::settings_pack& settings);
 
-int log_config_values() {
-
-	try {
-		Config& config = Config::getInstance();
-		CONFIG_LOG("ipv6_enabled:        %s", CONFIG.net_ipv6_enabled() ? "true" : "false");
-		CONFIG_LOG("enable_incoming_utp: %s", CONFIG.net_incoming_utp() ? "true" : "false");
-		CONFIG_LOG("enable_outgoing_utp: %s", CONFIG.net_outgoing_utp() ? "true" : "false");
-		CONFIG_LOG("Listen interface   \"%s\"", CONFIG.net_listen_ifaces().c_str());
-		CONFIG_LOG("Listen interface   \"%s\"", CONFIG.net_outgoing_ifaces().c_str());
-		CONFIG_LOG("bootstrap_nodes:   \"%s\"", CONFIG.net_bootstrap_nodes().c_str());
-
-		CONFIG_LOG("Console Logging: %s", config.isConsoleEnabled() ? "Enabled" : "Disabled");
-		CONFIG_LOG("Log File: %s", config.getLogFile().c_str());
-
-		CONFIG_LOG("Debug Mode: %s", config.isDebugEnabled() ? "Enabled" : "Disabled");
-		CONFIG_LOG("Debug Pause: %d seconds", config.getDebugPause());
-		CONFIG_LOG("Exit Pause: %d seconds", config.getExitPause());
-	}
-	catch (const std::exception& e) {
-		LOG_TRACE("main", "Exception occurred: %s", e.what());
-	}
-
-	return 0;
-}
 
 int main(int argc, TCHAR** argv, TCHAR envp)
 {
@@ -112,21 +101,27 @@ int main(int argc, TCHAR** argv, TCHAR envp)
 	char** argn = argv;
 #endif // UNICODE
 
-	CmdLineUtil::getInstance()->initializeCmdlineParser(argc, argn);
+	CmdLineUtil::get()->initialize(argc, argn);
 
-	CmdlineParser* inputParser = CmdLineUtil::getInstance()->getInputParser();
+	CmdlineParser* inputParser = CmdLineUtil::get()->parser();
 
-	CmdlineOption cmdlineOptionHelp({		"-h", "--help" },     "display this help");
-	CmdlineOption cmdlineOptionVerbose({	"-v", "--verbose" },  "verbose output");
-	CmdlineOption cmdlineOptionNoBanner({ "-n", "--nobanner" }, "no banner");
-	CmdlineOption cmdlineOptionQuiet({ "-q", "--quiet" }, "quiet");
-	CmdlineOption cmdlineOptionConfigFile({ "-c", "--config" }, "config gile");
+	SCmdlineOptValues helpOptionT(       { "-h", "--help" }     , "Display help information" , "id_help");
+	SCmdlineOptValues verboseOptionT(    { "-v", "--verbose" }  , "verbose output"           , "id_verbose");
+	SCmdlineOptValues noBannerOptionT(   { "-n", "--nobanner" } , "no banner"                , "id_nobanner");
+	SCmdlineOptValues quietOptionT(      { "-q", "--quiet" }    , "quiet"                    , "id_quiet");
+	SCmdlineOptValues cfgfilePathOptionT({ "-c", "--config" }   , "config file"              , "id_cfgfile");
 
-	inputParser->addOption(cmdlineOptionHelp);
-	inputParser->addOption(cmdlineOptionVerbose);
-	inputParser->addOption(cmdlineOptionQuiet);
-	inputParser->addOption(cmdlineOptionConfigFile);
-	inputParser->addOption(cmdlineOptionNoBanner);
+	CmdlineOption cmdlineOptionHelp(helpOptionT);
+	CmdlineOption cmdlineOptionVerbose(verboseOptionT);
+	CmdlineOption cmdlineOptionNoBanner(noBannerOptionT);
+	CmdlineOption cmdlineOptionQuiet(quietOptionT);
+	CmdlineOption cmdlineOptionConfigFile(cfgfilePathOptionT);
+
+	inputParser->addOption(helpOptionT);
+	inputParser->addOption(verboseOptionT);
+	inputParser->addOption(noBannerOptionT);
+	inputParser->addOption(quietOptionT);
+	inputParser->addOption(cfgfilePathOptionT);
 
 	bool optHelp = inputParser->isSet(cmdlineOptionHelp);
 	bool optVerbose = inputParser->isSet(cmdlineOptionVerbose);
@@ -134,10 +129,9 @@ int main(int argc, TCHAR** argv, TCHAR envp)
 	bool optQuiet = inputParser->isSet(cmdlineOptionQuiet);
 	bool optConfig = inputParser->isSet(cmdlineOptionConfigFile);
 
-	g_is_verbose = optVerbose;
-	if (optQuiet) {
-		g_is_verbose = false;
-	}
+	//if (optQuiet) {
+	//	g_is_verbose = false;
+	//}
 	
 	if (optQuiet && optVerbose) {
 		COUTCS("Warning: Quiet and Verbose: Verbose superceed Quiet...");
@@ -159,7 +153,7 @@ int main(int argc, TCHAR** argv, TCHAR envp)
 		if (inputParser->get_option_argument(cmdlineOptionConfigFile, tmp_config_file)) {
 			LOG_TRACE("main::arguments::optTracker", "tmp_config_file %s", tmp_config_file.c_str());
 
-			bool is_valid = Config::getInstance().ValidateConfigChecksum(tmp_config_file);
+			bool is_valid = Config::get().validate(tmp_config_file);
 			if (is_valid) {
 				LOG_TRACE("main::ValidateConfigChecksum", "tmp_config_file %s VALID", tmp_config_file.c_str());
 			}else {
@@ -170,7 +164,7 @@ int main(int argc, TCHAR** argv, TCHAR envp)
 #endif 
 			}
 
-			Config::getInstance().Initialize(tmp_config_file);
+			Config::get().initialize(tmp_config_file);
 		}
 		else {
 			LOG_TRACE("main::arguments::optTracker", "missing url");
@@ -179,10 +173,10 @@ int main(int argc, TCHAR** argv, TCHAR envp)
 		}
 	}
 	else {
-		Config::getInstance().Initialize();
+		Config::get().initialize();
 	}
 
-	log_config_values();
+	dump_config_values();
 
 	INFOLOG("=======================================");
 	NOTICELOG("libtorrent settings");
@@ -196,34 +190,19 @@ int main(int argc, TCHAR** argv, TCHAR envp)
 
 
 	lt::settings_pack settings;
-	//settings.set_bool(lt::settings_pack::enable_ipv6, false);
-	//settings.set_int(lt::settings_pack::udp_port, 6881);  // Change to an available port
-	settings.set_bool(lt::settings_pack::enable_outgoing_utp, CONFIG.net_outgoing_utp());
-	settings.set_bool(lt::settings_pack::enable_incoming_utp, CONFIG.net_incoming_utp());
-	settings.set_str(lt::settings_pack::listen_interfaces, "0.0.0.0:6881");
-	//settings.set_str(lt::settings_pack::listen_interfaces, CONFIG.net_listen_ifaces());
-
-	// Correctly formatted bootstrap nodes (no spaces after commas)
-
-	// Enable DHT before setting bootstrap nodes
-	settings.set_bool(lt::settings_pack::enable_dht, true);
-
-	settings.set_str(lt::settings_pack::dht_bootstrap_nodes, "router.bittorrent.com:6881,router.utorrent.com:6881,dht.transmissionbt.com:6881");
-	//settings.set_str(lt::settings_pack::dht_bootstrap_nodes, CONFIG.net_bootstrap_nodes());
+	init_settings_hardcoded(settings);
+	
+	std::string test_listen_ifaces =  settings.get_str(lt::settings_pack::listen_interfaces);
+	NOTICELOG("CHECK FOR SETTINGS VALIDITY: %s", test_listen_ifaces.c_str());
 	lt::session s(settings);
 
 	// Start processing DHT alerts
 	process_alerts(s);
 
-	if (CONFIG.isDebugEnabled()) {
-		DEJA_CONSOLE_WRITE("DO YOU WANT TO SLEEP ?");
-		char buf[256];
-		DEJA_CONSOLE_READ(buf, 255);
-		if (!strcmp(buf, "yes")) {
-			DEJA_CONSOLE_ECHO("OK");
-		}
-		LOG_DEBUG("main", "Sleeping for %d", CONFIG.getExitPause());
-		Sleep(CONFIG.getExitPause());
+	if (CONFIG.debug_mode_enabled()) {
+
+		LOG_DEBUG("main", "Sleeping for %d", CONFIG.dbg_exit_delay());
+		Sleep(CONFIG.dbg_exit_delay());
 	}
 	
 	return 0;
@@ -408,20 +387,103 @@ void process_alerts(lt::session& s) {
 			else if (auto dht_r = lt::alert_cast<lt::dht_reply_alert>(a)) {
 				INFOLOG("[ DHT REPLY ]\t\t[%s] -> %d", dht_r->url.c_str(), dht_r->num_peers);
 			}
-
-			// Always check if it's time to log
-			auto now = std::chrono::steady_clock::now();
-			if (std::chrono::duration_cast<std::chrono::seconds>(now - last_log_time).count() >= 5) {
-				INFOLOG("[%s] waiting for network notifications...", get_current_datetime().c_str());
-				last_log_time = now; // Reset the timer
-			}
-
-			// If no alerts were processed, wait for a short time to avoid busy looping
-			if (!has_alerts) {
-				std::this_thread::sleep_for(std::chrono::milliseconds(250)); // Lower CPU usage but faster loop
-			}
 		}
+		// Always check if it's time to log
+		auto now = std::chrono::steady_clock::now();
+		if (std::chrono::duration_cast<std::chrono::seconds>(now - last_log_time).count() >= 5) {
+			INFOLOG("[%s] waiting for network notifications...", get_current_datetime().c_str());
+			last_log_time = now; // Reset the timer
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(10)); // Lower CPU usage but faster loop
 	}
 }
 
 
+bool init_settings_from_cfgfile(lt::settings_pack &settings) {
+	bool res = true;
+	try {
+		settings.set_bool(lt::settings_pack::enable_dht, true);
+		settings.set_bool(lt::settings_pack::enable_incoming_utp, CONFIG.net_incoming_utp());
+		settings.set_bool(lt::settings_pack::enable_outgoing_utp, CONFIG.net_outgoing_utp());
+		settings.set_bool(lt::settings_pack::enable_incoming_tcp, CONFIG.net_incoming_tcp());
+		settings.set_bool(lt::settings_pack::enable_outgoing_tcp, CONFIG.net_outgoing_tcp());
+		settings.set_str( lt::settings_pack::listen_interfaces  , CONFIG.net_listen_ifaces());
+		settings.set_str( lt::settings_pack::outgoing_interfaces  , CONFIG.net_outgoing_ifaces());
+		settings.set_str( lt::settings_pack::dht_bootstrap_nodes, CONFIG.net_bootstrap_nodes());
+		//settings.set_int(lt::settings_pack::dht_announce_interval,5);
+	}
+	catch (const std::exception& e) {
+		LOG_TRACE("main", "Exception occurred: %s", e.what());
+		res = false;
+	}
+
+	return res;
+}
+
+
+
+//==============================================================================
+//
+// function name: init_settings
+// description:   this is an important function because for this program to
+// actually execute what is expected of it, the network connections need to 
+// be operational ando do all the configuration related to it.
+// 
+// The libtorrent library initialization uses this 'settings_pack' data structure
+// and it is created here. 
+// 
+// NOTE: This **HARDCODED** version of this function was written for 
+// **debugging purposes only** The way it's supposed to work is that all
+// values are to be dynamically assigned from the configuration file.
+//============================================================================
+// Copyright (C)  Guillaume Plante <codegp@icloud.com>
+//==============================================================================
+
+bool init_settings_hardcoded(lt::settings_pack& settings) {
+
+	bool res = true;
+	try {
+		settings.set_bool(lt::settings_pack::enable_dht, true);
+		settings.set_bool(lt::settings_pack::enable_incoming_utp, true);
+		settings.set_bool(lt::settings_pack::enable_outgoing_tcp, true);
+		settings.set_bool(lt::settings_pack::enable_incoming_tcp, true);
+		settings.set_bool(lt::settings_pack::enable_outgoing_utp, true);
+		//settings.set_int(lt::settings_pack::dht_announce_interval,5);
+		//settings.set_str(lt::settings_pack::outgoing_interfaces, "10.0.0.138:6881");
+		settings.set_str(lt::settings_pack::listen_interfaces, "10.0.0.138:6881");
+		//settings.set_str(lt::settings_pack::dht_bootstrap_nodes, "router.bittorrent.com:6881,router.utorrent.com:6881,dht.transmissionbt.com:6881");
+		settings.set_str(lt::settings_pack::dht_bootstrap_nodes, "router.bittorrent.com:6881");
+	}
+	catch (const std::exception& e) {
+		LOG_TRACE("main", "Exception occurred: %s", e.what());
+		res = false;
+	}
+
+	return res;
+}
+
+
+int dump_config_values() {
+
+	try {
+		Config& config = Config::get();
+		CONFIG_LOG("ipv6_enabled:        %s", CONFIG.net_ipv6_enabled() ? "true" : "false");
+		CONFIG_LOG("enable_incoming_utp: %s", CONFIG.net_incoming_utp() ? "true" : "false");
+		CONFIG_LOG("enable_outgoing_utp: %s", CONFIG.net_outgoing_utp() ? "true" : "false");
+		CONFIG_LOG("Listen interface   \"%s\"", CONFIG.net_listen_ifaces().c_str());
+		CONFIG_LOG("Listen interface   \"%s\"", CONFIG.net_outgoing_ifaces().c_str());
+		CONFIG_LOG("bootstrap_nodes:   \"%s\"", CONFIG.net_bootstrap_nodes().c_str());
+
+		CONFIG_LOG("Console Logging: %s", config.log_to_console() ? "Enabled" : "Disabled");
+		CONFIG_LOG("Log File: %s", config.logfile_path().c_str());
+
+		CONFIG_LOG("Debug Mode: %s", config.debug_mode_enabled() ? "Enabled" : "Disabled");
+		CONFIG_LOG("Exit Pause: %d seconds", config.dbg_exit_delay());
+	}
+	catch (const std::exception& e) {
+		LOG_TRACE("main", "Exception occurred: %s", e.what());
+	}
+
+	return 0;
+}

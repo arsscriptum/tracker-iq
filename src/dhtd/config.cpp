@@ -6,6 +6,7 @@
 //============================================================================
 // Copyright (C)  Guillaume Plante <codegp@icloud.com>
 //==============================================================================
+
 #include "stdafx.h"
 #include "ini.h"
 #include "inireader.h"
@@ -23,10 +24,10 @@ std::mutex Config::mutex;
 
 
 Config::Config() {
-    Defaults();
+    defaults();
 }
 
-Config& Config::getInstance() {
+Config& Config::get() {
     std::lock_guard<std::mutex> lock(mutex);
 
     if (!instance) {
@@ -36,11 +37,11 @@ Config& Config::getInstance() {
     return *instance;
 }
 
-std::string Config::getFilePath() const {
+std::string Config::cfgfile_path() const {
     return _filePath;
 }
 
-std::string Config::getDefaultConfigPath() {
+std::string Config::default_cfgfile_path() {
     namespace fs = std::filesystem;
 
     fs::path currentPath = fs::current_path() / "dhtd.ini";
@@ -76,24 +77,24 @@ std::string Config::resolveEnvVariables(const std::string& value) {
     return value; // Return original value if no match
 }
 
-bool Config::Initialize(const std::string path) {
+bool Config::initialize(const std::string path) {
 
     if (path.length() == 0) {
-        std::string default_filepath = getDefaultConfigPath();
+        std::string default_filepath = default_cfgfile_path();
         if (default_filepath.length()) {
-            ParseConfig(default_filepath);
+            parse(default_filepath);
             _filePath = path;
         }
     }
     else {
-        ParseConfig(path);
+        parse(path);
         _filePath = path;
     }
     return _initialized;
 }
 
 // Function to set/update checksum in config file
-bool Config::SetConfigChecksum(const std::string& configPath) {
+bool Config::save_checksum(const std::string& configPath) {
 
     LOG_TRACE("Config::SetConfigChecksum", "%s", configPath.c_str());
     std::string newChecksum = ComputeFileChecksum(configPath);
@@ -166,7 +167,7 @@ std::string Config::ComputeFileChecksum(const std::string& filePath) {
 }
 
 // Validate checksum before loading config
-bool Config::ValidateConfigChecksum(const std::string& configPath) {
+bool Config::validate(const std::string& configPath) {
     LOG_TRACE("Config::ValidateConfigChecksum", "%s", configPath.c_str());
 
     INIReader reader(configPath);
@@ -196,7 +197,7 @@ bool Config::ValidateConfigChecksum(const std::string& configPath) {
     return true;
 }
 
-void Config::Defaults() {
+void Config::defaults() {
 
     _enable_ipv6 = false;
     _enable_outgoing_utp = true;
@@ -215,13 +216,12 @@ void Config::Defaults() {
     _logfile = "";
 
     _debug_enabled = false;
-    _debug_pause = 0;
-    _exit_pause = 0;
+    _dbg_exit_delay_ms = 0;
     _filePath = "";
     _initialized = false;
 }
 
-bool Config::ParseConfig(const std::string& configPath) {
+bool Config::parse(const std::string& configPath) {
     INIReader reader(configPath);
 
     if (reader.ParseError() < 0) {
@@ -229,6 +229,12 @@ bool Config::ParseConfig(const std::string& configPath) {
         return false;
     }
 
+    // [Network] section settings
+    _enable_ipv6 = reader.GetBoolean("network", "enable_ipv6", false);
+    _enable_incoming_tcp = reader.GetBoolean("network", "enable_incoming_tcp", true);
+    _enable_outgoing_tcp = reader.GetBoolean("network", "enable_outgoing_tcp", true);
+    _enable_incoming_utp = reader.GetBoolean("network", "enable_incoming_utp", true);
+    _enable_outgoing_utp = reader.GetBoolean("network", "enable_outgoing_utp", true);
 
     _user_agent = reader.Get("network", "user_agent", "");
     _client_name = reader.Get("network", "client_name", "");
@@ -238,50 +244,51 @@ bool Config::ParseConfig(const std::string& configPath) {
     _outgoing_ifaces = reader.Get("network", "_outgoing_ifaces", "");
     _listen_ifaces = reader.Get("network", "listen_ifaces", "0");
 
-
+    // [Log] section settings
     _enable_console = reader.GetBoolean("log", "console", false);
     _enable_logfile = reader.GetBoolean("log", "file", false);
     _logfile = resolveEnvVariables(reader.Get("log", "path", ""));
 
+    // [Debug] section settings
     _debug_enabled = reader.GetBoolean("debug", "enabled", false);
-    _debug_pause = reader.GetInteger("debug", "debug_pause", 0);
-    _exit_pause = reader.GetInteger("debug", "exit_pause", 0);
+    _dbg_exit_delay_ms = reader.GetInteger("debug", "exit_pause", 0);
     _filePath = configPath;
     _initialized = true;
-#ifdef __TIQ_IMPL__
-    _tracker_type  = string_to_tracker_type(CONFIG.getTrackerTypeString());
-#endif
+
     return _initialized;
 }
 
 // Getters for [log]
-bool Config::isConsoleEnabled() const {
+bool Config::log_to_console() const {
     return _enable_console;
 }
 
-bool Config::isLogFileEnabled() const {
+bool Config::log_to_file() const {
     return _enable_logfile;
 }
 
-std::string Config::getLogFile() const {
+std::string Config::logfile_path() const {
     return _logfile;
 }
 
 // Getters for [debug]
-bool Config::isDebugEnabled() const {
+bool Config::debug_mode_enabled() const {
     return _debug_enabled;
 }
 
-unsigned int Config::getDebugPause() const {
-    return _debug_pause;
-}
 
-unsigned int Config::getExitPause() const {
-    return _exit_pause;
+unsigned int Config::dbg_exit_delay() const {
+    return _dbg_exit_delay_ms;
 }
 
 bool Config::net_ipv6_enabled() const  {
     return _enable_ipv6;
+}
+bool Config::net_incoming_tcp() const {
+    return _enable_incoming_tcp;
+}
+bool Config::net_outgoing_tcp() const {
+    return _enable_outgoing_tcp;
 }
 bool Config::net_incoming_utp() const  {
     return _enable_incoming_utp;

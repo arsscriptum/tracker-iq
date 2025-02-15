@@ -149,6 +149,14 @@ If you want to build on the command line, you need some dependencies like [Build
 
 <center><img src="doc/img/build.gif" alt="logo"></center>
 
+## Step-by-Step Commands 
+
+```bash 
+git clone --recurse-submodules https://github.com/arsscriptum/tracker-iq.git trackeriq
+cd trackeriq
+git 'update-index' '--assume-unchanged' src/dhtd/version.cpp
+git 'update-index' '--assume-unchanged' build.nfo
+```
 
 ## Ranking Formula
 

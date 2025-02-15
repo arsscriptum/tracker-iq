@@ -34,6 +34,9 @@
     <ClCompile Include="$(SourcesDirectory)database.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="$(SourcesDirectory)appsettings.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SourcesDirectory)stdafx.h">
@@ -76,6 +79,12 @@
       <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="$(SourcesDirectory)targetver.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SourcesDirectory)appsettings.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SourcesDirectory)cmdline_opt_values.h">
       <Filter>headers</Filter>
     </ClInclude>
   </ItemGroup>

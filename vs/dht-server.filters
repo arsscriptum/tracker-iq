@@ -66,6 +66,9 @@
     <ClInclude Include="$(SourcesDirectory)config.h">
       <Filter>headers</Filter>
     </ClInclude>
+    <ClInclude Include="$(SourcesDirectory)appsettings.h">
+      <Filter>headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SourcesDirectory)cmdline.cpp">
@@ -99,6 +102,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="$(SourcesDirectory)config.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SourcesDirectory)appsettings.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

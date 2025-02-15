@@ -22,17 +22,19 @@ public:
     Config(const Config&) = delete;
     Config& operator=(const Config&) = delete;
 
-    static Config& getInstance();
+    static Config& get();
 
-    std::string getFilePath() const;
-    static std::string getDefaultConfigPath();
+    std::string cfgfile_path() const;
+    static std::string default_cfgfile_path();
 
-    bool Initialize(const std::string configPath = "");
-    bool ValidateConfigChecksum(const std::string& configPath);  // New validation function
-    void Defaults();
-    bool SetConfigChecksum(const std::string& configPath);
+    bool initialize(const std::string configPath = "");
+    bool validate(const std::string& configPath);  // New validation function
+    void defaults();
+    bool save_checksum(const std::string& configPath);
 
     bool net_ipv6_enabled() const;
+    bool net_incoming_tcp() const;
+    bool net_outgoing_tcp() const;
     bool net_incoming_utp() const;
     bool net_outgoing_utp() const;
 
@@ -45,20 +47,19 @@ public:
     std::string net_bootstrap_nodes() const;
 
     // Logging
-    bool isConsoleEnabled() const;
-    bool isLogFileEnabled() const;
-    std::string getLogFile() const;
+    bool log_to_console() const;
+    bool log_to_file() const;
+    std::string logfile_path() const;
 
     // Debug
-    bool isDebugEnabled() const;
-    unsigned int getDebugPause() const;
-    unsigned int getExitPause() const;
+    bool debug_mode_enabled() const;
+    unsigned int dbg_exit_delay() const;
 
 
 private:
 
 
-    bool ParseConfig(const std::string& configPath);
+    bool parse(const std::string& configPath);
     
     bool _initialized;
     explicit Config(const std::string& filePath);
@@ -71,8 +72,11 @@ private:
     // network 
 
     bool _enable_ipv6;
-    bool _enable_outgoing_utp;
+    bool _enable_incoming_tcp;
+    bool _enable_outgoing_tcp;
     bool _enable_incoming_utp;
+    bool _enable_outgoing_utp;
+    
 
     // this is the client identification to the tracker. The recommended
     // format of this string is: "client-name/client-version
@@ -118,8 +122,7 @@ private:
 
     // [debug]   
     bool _debug_enabled;
-    unsigned int _debug_pause;
-    unsigned int _exit_pause;
+    unsigned int _dbg_exit_delay_ms;
 
     // [log]
     bool _enable_console;
@@ -130,12 +133,10 @@ private:
     static std::string resolveEnvVariables(const std::string& value);
     // Function to compute checksum
     static std::string ComputeFileChecksum(const std::string& filePath);
-#ifdef __TIQ_IMPL__
-    TrackerType _tracker_type;
-#endif // __TIQ_IMPL__
+
 };
 
-#define CONFIG Config::getInstance()
+#define CONFIG Config::get()
 
 
 #endif // __CONFIG_H__
