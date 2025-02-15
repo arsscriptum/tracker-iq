@@ -4,7 +4,7 @@
 //     nowarns.h : remove warnings
 //
 //==============================================================================
-//  Copyright (C) Guilaume Plante 2020 <cybercastor@icloud.com>
+// Copyright (C)  Guillaume Plante <codegp@icloud.com>
 //==============================================================================
  
 #ifndef __NO_WARNS_H__

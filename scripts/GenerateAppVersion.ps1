@@ -42,15 +42,15 @@ unsigned int dhtd::version::major  = {1};
 unsigned int dhtd::version::minor  = {2};
 unsigned int dhtd::version::build  = {3};
 unsigned int dhtd::version::rev    = release;
-std::string  dhtd::version::sha    = {5};
-std::string  dhtd::version::branch = {6};
+std::string  dhtd::version::sha    = `"{5}`";
+std::string  dhtd::version::branch = `"{6}`";
 #else
 unsigned int dhtd::version::major  = {1};
 unsigned int dhtd::version::minor  = {2};
 unsigned int dhtd::version::build  = {3};
 unsigned int dhtd::version::rev    = {4};
-std::string  dhtd::version::sha    = {5};
-std::string  dhtd::version::branch = {6};
+std::string  dhtd::version::sha    = `"{5}`";
+std::string  dhtd::version::branch = `"{6}`";
 #endif // _RELEASE
 "@
 
@@ -65,7 +65,7 @@ $BranchName = &"$GitExe" 'rev-parse' '--abbrev-ref' 'HEAD'
 $HasValidTag = $False 
 $MostRecentValidTag = ""
 
-if(([string]::IsNullOrEmpty($RecenTags) -eq $False) && ($RecenTags -is [string[]])){
+if(([string]::IsNullOrEmpty($RecenTags) -eq $False) -And ($RecenTags -is [string[]])){
     $tmp_latest = $RecenTags | Select -First 1
     if($tmp_latest -match $VersionRegexPattern){
         Write-Output "Found most recent tag! It's valid! $tmp_latest"

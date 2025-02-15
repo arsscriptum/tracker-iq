@@ -7,3 +7,7 @@
 [submodule "external/libtorrent"]
 	path = external/libtorrent
 	url = https://github.com/arsscriptum/libtorrent.git
+[submodule "external/sqlite"]
+    path = external/sqlite
+	url = https://github.com/arsscriptum/sqlite.git
+    branch = precompiled

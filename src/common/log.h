@@ -4,7 +4,7 @@
 //   log.h - exported_h
 //
 //==============================================================================
-//  cybercastor - made in quebec 2020 <cybercastor@icloud.com>
+//  Copyright (C)  Guillaume Plante <codegp@icloud.com>
 //==============================================================================
 
 

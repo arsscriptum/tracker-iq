@@ -67,6 +67,9 @@
 copy $(LibtorrentDllBinary) $(ExecutablesDirectory)
 copy $(DhtdConfigDir)*.ini  $(ExecutablesDirectory) </Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(ScriptsDirectory)prepare-build.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -89,9 +92,9 @@ copy $(DhtdConfigDir)*.ini  $(ExecutablesDirectory) </Command>
   <Target Name="CustomClean" BeforeTargets="BeforeBuild">
     <Message Text="Custom Clean" Importance="high" />
     <ItemGroup>
-        <_CustomFilesToDelete Include="$(ExecutablesDirectory)*" />
-        <_CustomFilesToDelete Include="$(OutDir)*" />
-        <_CustomFilesToDelete Include="$(IntDir)" />
+      <_CustomFilesToDelete Include="$(ExecutablesDirectory)*" />
+      <_CustomFilesToDelete Include="$(OutDir)*" />
+      <_CustomFilesToDelete Include="$(IntDir)" />
     </ItemGroup>
     <Delete Files="@(_CustomFilesToDelete)" />
   </Target>
@@ -138,5 +141,7 @@ copy $(DhtdConfigDir)*.ini  $(ExecutablesDirectory) </Command>
     <None Include="$(TiqBuildScriptsDirectory)buildcfg.ini" />
     <None Include="$(DhtdConfigDir)dhtd.ini" />
     <None Include="$(SolutionRootDirectory)dhtsrv.md" />
+    <None Include="..\scripts\GenerateAppVersion.ps1" />
+    <None Include="..\scripts\prepare-build.bat" />
   </ItemGroup>
 </Project>

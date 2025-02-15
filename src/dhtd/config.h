@@ -4,7 +4,7 @@
 //     config.h
 //
 //============================================================================
-//  Copyright (C) Guilaume Plante 2020 <cybercastor@icloud.com>
+// Copyright (C)  Guillaume Plante <codegp@icloud.com>
 //==============================================================================
 
 #ifndef __CONFIG_H__

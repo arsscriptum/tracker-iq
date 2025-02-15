@@ -12,6 +12,9 @@
 
      <SolutionRootDirectory>$(ProjectDir)..\</SolutionRootDirectory>
      <ExternalDirectory>$(SolutionRootDirectory)external\</ExternalDirectory>
+     <SQLiteDirectory>$(ExternalDirectory)sqlite\</SQLiteDirectory>
+     <SQLiteIncludeDirectory>$(SQLiteDirectory)src\</SQLiteIncludeDirectory>
+     <SQLiteLibraryDirectory>$(SQLiteDirectory)sqlite\bin\dll-win-x64\</SQLiteLibraryDirectory>
      <ExecutablesDirectory>$(SolutionRootDirectory)bin\</ExecutablesDirectory>
      <VsDirectory>$(ProjectDir)</VsDirectory>
      <DhtdBuildScriptsDirectory>$(VsDirectory)build.dhtd\</DhtdBuildScriptsDirectory>

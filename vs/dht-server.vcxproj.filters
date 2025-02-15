@@ -80,6 +80,12 @@
     <None Include="$(DhtdConfigDir)dhtd.ini">
       <Filter>config</Filter>
     </None>
+    <None Include="..\scripts\GenerateAppVersion.ps1">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\scripts\prepare-build.bat">
+      <Filter>scripts</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">

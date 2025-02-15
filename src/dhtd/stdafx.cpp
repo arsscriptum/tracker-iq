@@ -6,7 +6,7 @@
 // stdafx.obj will contain the pre-compiled type information
 //
 //==============================================================================
-//  Copyright (C) Guilaume Plante 2020 <cybercastor@icloud.com>
+// Copyright (C)  Guillaume Plante <codegp@icloud.com>
 //==============================================================================
 
 
