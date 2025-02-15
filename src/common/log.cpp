@@ -43,25 +43,13 @@ void __cdecl LogNoticeFunc(const char* format, ...)
 	*p++ = '\n';
 	*p = '\0';
 
-	std::string text(buf);
-	int textLength = text.size();
-
-	// Build horizontal border (width = text length + 2 for padding)
-	std::string horizontal(textLength + 2, '=');
-
-	// Construct the three lines of the box using the specified box-drawing characters
-	std::string topBorder = "+" + horizontal + "+";
-	std::string middleLine = "| " + text + " |";
-	std::string bottomBorder = "+" + horizontal + "+";
-
-	// Output the box with the border in RED and the text in YELLOW.
-	std::clog << ANSI_TEXT_COLOR_RED << topBorder << ANSI_TEXT_COLOR_RESET << "\r\n"
-		<< ANSI_TEXT_COLOR_RED << "| " << ANSI_TEXT_COLOR_YELLOW << text << ANSI_TEXT_COLOR_RED << " |" << ANSI_TEXT_COLOR_RESET << "\r\n"
-		<< ANSI_TEXT_COLOR_RED << bottomBorder << ANSI_TEXT_COLOR_RESET << "\r\n";
+	EndOfLineEscapeTag FormatDebug1{ RED_UNDERLINED, ANSI_TEXT_COLOR_RESET };
+	EndOfLineEscapeTag FormatDebug2{ CONSOLE_COLOR_RED, ANSI_TEXT_COLOR_RESET };
+	EndOfLineEscapeTag FormatDebug3{ ANSI_TEXT_COLOR_WHITE_BRIGHT, ANSI_TEXT_COLOR_RESET };
+	std::clog << FormatDebug2 << " [I] ";
+	std::clog << FormatDebug3 << " " << buf;
 
 }
-
-
 
 void __cdecl ErrorDescFunc(const char* channel, const char* format, ...)
 {
@@ -83,20 +71,15 @@ void __cdecl ErrorDescFunc(const char* channel, const char* format, ...)
 	*p++ = '\n';
 	*p = '\0';
 
-
 	LOG_ERROR(channel, "%s", buf);
 
-		EndOfLineEscapeTag FormatDebugTitle{ RED_UNDERLINED, ANSI_TEXT_COLOR_RESET };
-		EndOfLineEscapeTag FormatDebug1{ RED_UNDERLINED, ANSI_TEXT_COLOR_RESET };
-		EndOfLineEscapeTag FormatDebug2{ CONSOLE_COLOR_YELLOW, ANSI_TEXT_COLOR_RESET };
-		EndOfLineEscapeTag FormatDebug3{ CONSOLE_COLOR_BKGRND_YELLOW_RED , ANSI_TEXT_COLOR_RESET };
-		std::clog << FormatDebugTitle << "ERROR";
-		std::clog << FormatDebug2 << " [" << channel << "]";
-		std::clog << FormatDebug3 << " " << buf;
-
-
-
-
+	EndOfLineEscapeTag FormatDebugTitle{ RED_UNDERLINED, ANSI_TEXT_COLOR_RESET };
+	EndOfLineEscapeTag FormatDebug1{ RED_UNDERLINED, ANSI_TEXT_COLOR_RESET };
+	EndOfLineEscapeTag FormatDebug2{ ANSI_TEXT_COLOR_WHITE, ANSI_TEXT_COLOR_RESET };
+	EndOfLineEscapeTag FormatDebug3{ CONSOLE_COLOR_YELLOW_BRIGHT , ANSI_TEXT_COLOR_RESET };
+	std::clog << FormatDebugTitle << "ERROR";
+	std::clog << FormatDebug2 << " [" << channel << "]";
+	std::clog << FormatDebug3 << " " << buf;
 }
 
 

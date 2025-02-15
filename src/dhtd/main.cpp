@@ -200,7 +200,7 @@ int main(int argc, TCHAR** argv, TCHAR envp)
 	//settings.set_int(lt::settings_pack::udp_port, 6881);  // Change to an available port
 	settings.set_bool(lt::settings_pack::enable_outgoing_utp, CONFIG.net_outgoing_utp());
 	settings.set_bool(lt::settings_pack::enable_incoming_utp, CONFIG.net_incoming_utp());
-	settings.set_str(lt::settings_pack::listen_interfaces, "10.0.0.138:6881");
+	settings.set_str(lt::settings_pack::listen_interfaces, "0.0.0.0:6881");
 	//settings.set_str(lt::settings_pack::listen_interfaces, CONFIG.net_listen_ifaces());
 
 	// Correctly formatted bootstrap nodes (no spaces after commas)
