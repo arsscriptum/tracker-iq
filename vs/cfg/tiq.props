@@ -16,7 +16,7 @@
      <VsDirectory>$(ProjectDir)</VsDirectory>
      <TiqBuildScriptsDirectory>$(VsDirectory)build.tiq\</TiqBuildScriptsDirectory>
      <TiqConfigDir>$(SolutionRootDirectory)config\tiq\</TiqConfigDir>
-     <LibTorrentDirectory>$(ExternalDirectory)libtorrent-iq\</LibTorrentDirectory>
+     <LibTorrentDirectory>$(ExternalDirectory)libtorrent\</LibTorrentDirectory>
      <LibTorrentInstallDirectory>$(LibTorrentDirectory)install\</LibTorrentInstallDirectory>
      <LibTorrentIncludeDirectory>$(LibTorrentDirectory)include\</LibTorrentIncludeDirectory>
      <SourcesDirectory>$(SolutionRootDirectory)src\tiq\</SourcesDirectory>
