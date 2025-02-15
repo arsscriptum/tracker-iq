@@ -1,9 +1,9 @@
-[submodule "external/libtorrent"]
-	path = external/libtorrent
-	url = https://github.com/arsscriptum/libtorrent-iq.git
 [submodule "external/jsmn"]
 	path = external/jsmn
 	url = https://github.com/arsscriptum/jsmn.git
 [submodule "external/cpp-httplib"]
 	path = external/cpp-httplib
 	url = https://github.com/arsscriptum/cpp-httplib.git
+[submodule "external/libtorrent-iq"]
+	path = external/libtorrent-iq
+	url = https://github.com/arsscriptum/libtorrent-iq.git
