@@ -9,6 +9,9 @@
 vs/tracker-rank.sln
 vs/tracker-rank.vcxproj.user
 
+external/libtorrent.binaries/
+external/libtorrent.binaries/**
+
 # binaries 
 bin/
 bin/**
