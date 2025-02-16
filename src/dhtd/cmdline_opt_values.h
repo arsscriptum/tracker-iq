@@ -17,7 +17,7 @@ typedef unsigned char uint8_t;
 #endif
 
 
-enum class cmdlineOptTypes : uint8_t { Unknown, Help, Verbose, NoBanner, Quiet, cfgfilePath };
+enum class cmdlineOptTypes : uint8_t { Unknown, Help, Verbose, NoBanner, Quiet, Config };
 using cmdOpT = cmdlineOptTypes;
 
 struct SCmdlineOptValues {

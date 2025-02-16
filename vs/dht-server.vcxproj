@@ -146,8 +146,8 @@ copy $(DhtdConfigDir)*.ini  $(ExecutablesDirectory) </Command>
     <None Include="$(TiqBuildScriptsDirectory)Build.bat" />
     <None Include="$(TiqBuildScriptsDirectory)buildcfg.ini" />
     <None Include="$(DhtdConfigDir)dhtd.ini" />
-    <None Include="$(SolutionRootDirectory)dhtsrv.md" />
     <None Include="$(ScriptsDirectory)GenerateAppVersion.ps1" />
     <None Include="$(ScriptsDirectory)prepare-build.bat" />
+    <None Include="..\doc\dhtsrv.md" />
   </ItemGroup>
 </Project>

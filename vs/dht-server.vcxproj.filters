@@ -92,23 +92,19 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(DocumentationDirectory)dhtsrv.md">
-      <Filter>doc</Filter>
-    </None>
     <None Include="$(DhtdConfigDir)dhtd.ini">
       <Filter>config</Filter>
-    </None>
-    <None Include="..\scripts\GenerateAppVersion.ps1">
-      <Filter>scripts</Filter>
-    </None>
-    <None Include="..\scripts\prepare-build.bat">
-      <Filter>scripts</Filter>
     </None>
     <None Include="$(TiqBuildScriptsDirectory)buildcfg.ini">
       <Filter>scripts</Filter>
     </None>
     <None Include="$(TiqBuildScriptsDirectory)Build.bat">
       <Filter>scripts</Filter>
+    </None>
+    <None Include="$(ScriptsDirectory)GenerateAppVersion.ps1" />
+    <None Include="$(ScriptsDirectory)prepare-build.bat" />
+    <None Include="..\doc\dhtsrv.md">
+      <Filter>doc</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

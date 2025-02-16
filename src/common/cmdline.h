@@ -26,7 +26,8 @@ class CmdlineOption
 public:
     CmdlineOption()
         : _options(), _description(""), _typeId(cmdOpT::Unknown) {}
-    // Constructor taking options and description. _uid can be set later.
+    CmdlineOption(const std::vector<std::string>& opt, const std::string& desc)
+        : _options(opt), _description(desc), _typeId(cmdlineOptTypes::Unknown) {}
     CmdlineOption(const std::vector<std::string>& opt, const std::string& desc, cmdOpT id)
         : _options(opt), _description(desc), _typeId(id) {}
 
@@ -113,7 +114,7 @@ public:
     // Updated addOption that takes the new structure type.
     void addOption(const SCmdlineOptValues& optVal)
     {
-        CmdlineOption option(optVal._options, optVal._description);
+        CmdlineOption option(optVal._options, optVal._description, optVal._type);
         option._typeId = optVal._type;
         options.push_back(option);
         int type_id = (int)optVal._type;
@@ -145,6 +146,15 @@ public:
         for (auto&& token : tokens) {
             dbg_output << token << std::endl;
         }
+    }
+
+    bool get_cmdline_opt(int id, CmdlineOption& retval) {
+        auto it = options_map.find(id);
+        if (it != options_map.end()) {
+            retval = it->second;
+            return true;
+        }
+        return false;  // Not found
     }
 private:
     bool cmdlineOptionValid(std::string opt)

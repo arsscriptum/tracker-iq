@@ -110,7 +110,7 @@ int main(int argc, TCHAR** argv, TCHAR envp)
 	SCmdlineOptValues verboseOptionT(    { "-v", "--verbose" }  , "verbose output"           , cmdOpT::Verbose);
 	SCmdlineOptValues noBannerOptionT(   { "-n", "--nobanner" } , "no banner"                , cmdOpT::NoBanner);
 	SCmdlineOptValues quietOptionT(      { "-q", "--quiet" }    , "quiet"                    , cmdOpT::Quiet);
-	SCmdlineOptValues cfgfilePathOptionT({ "-c", "--config" }   , "config file"              , cmdOpT::cfgfilePath);
+	SCmdlineOptValues cfgfilePathOptionT({ "-c", "--config" }   , "config file"              , cmdOpT::Config);
 
 
 
@@ -181,19 +181,11 @@ int main(int argc, TCHAR** argv, TCHAR envp)
 
 	dump_config_values();
 
-	INFOLOG("=======================================");
-	NOTICELOG("libtorrent settings");
-	INFOLOG("ipv6_enabled:        %s", CONFIG.net_ipv6_enabled() ?"true":"false");
-	INFOLOG("enable_incoming_utp: %s", CONFIG.net_incoming_utp() ? "true" : "false");
-	INFOLOG("enable_outgoing_utp: %s", CONFIG.net_outgoing_utp() ? "true" : "false");
-	INFOLOG("Listen interface   \"%s\"", CONFIG.net_listen_ifaces().c_str());
-	INFOLOG("Listen interface   \"%s\"", CONFIG.net_outgoing_ifaces().c_str());
-	INFOLOG("bootstrap_nodes:   \"%s\"", CONFIG.net_bootstrap_nodes().c_str());
-	INFOLOG("=======================================");
+
 
 
 	lt::settings_pack settings;
-	init_settings_hardcoded(settings);
+	init_settings_from_cfgfile(settings);
 	
 	std::string test_listen_ifaces =  settings.get_str(lt::settings_pack::listen_interfaces);
 	NOTICELOG("CHECK FOR SETTINGS VALIDITY: %s", test_listen_ifaces.c_str());
@@ -403,18 +395,52 @@ void process_alerts(lt::session& s) {
 }
 
 
+//==============================================================================
+//
+// function name: init_settings_from_cfgfile
+// description:   this is an important function because for this program to
+// actually execute what is expected of it, the network connections need to 
+// be operational ando do all the configuration related to it.
+// 
+// The libtorrent library initialization uses this 'settings_pack' data structure
+// and it is created here. 
+// 
+// NOTE: This **config** version of this function.
+//       All values are dynamically assigned from the configuration file.
+//============================================================================
+// Copyright (C)  Guillaume Plante <codegp@icloud.com>
+//==============================================================================
+
 bool init_settings_from_cfgfile(lt::settings_pack &settings) {
 	bool res = true;
 	try {
 		settings.set_bool(lt::settings_pack::enable_dht, true);
+		settings.set_bool(lt::settings_pack::dht_restrict_routing_ips, false);
+		settings.set_bool(lt::settings_pack::dht_prefer_verified_node_ids, false);
+
+		settings.set_bool(lt::settings_pack::dht_aggressive_lookups, true);
+		settings.set_bool(lt::settings_pack::dht_privacy_lookups, true);
+		settings.set_bool(lt::settings_pack::dht_enforce_node_id, false);
+		settings.set_bool(lt::settings_pack::dht_ignore_dark_internet, true);
+		settings.set_bool(lt::settings_pack::validate_https_trackers, false);
+		settings.set_bool(lt::settings_pack::use_dht_as_fallback, false);
+		
 		settings.set_bool(lt::settings_pack::enable_incoming_utp, CONFIG.net_incoming_utp());
 		settings.set_bool(lt::settings_pack::enable_outgoing_utp, CONFIG.net_outgoing_utp());
 		settings.set_bool(lt::settings_pack::enable_incoming_tcp, CONFIG.net_incoming_tcp());
 		settings.set_bool(lt::settings_pack::enable_outgoing_tcp, CONFIG.net_outgoing_tcp());
 		settings.set_str( lt::settings_pack::listen_interfaces  , CONFIG.net_listen_ifaces());
-		settings.set_str( lt::settings_pack::outgoing_interfaces  , CONFIG.net_outgoing_ifaces());
+		settings.set_str( lt::settings_pack::outgoing_interfaces, CONFIG.net_outgoing_ifaces());
 		settings.set_str( lt::settings_pack::dht_bootstrap_nodes, CONFIG.net_bootstrap_nodes());
 		//settings.set_int(lt::settings_pack::dht_announce_interval,5);
+		INFOLOG("=======================================");
+		NOTICELOG("libtorrent settings");
+		INFOLOG("enable_incoming_utp: %s", CONFIG.net_incoming_utp() ? "true" : "false");
+		INFOLOG("enable_outgoing_utp: %s", CONFIG.net_outgoing_utp() ? "true" : "false");
+		INFOLOG("Listen interface   \"%s\"", CONFIG.net_listen_ifaces().c_str());
+		INFOLOG("Listen interface   \"%s\"", CONFIG.net_outgoing_ifaces().c_str());
+		INFOLOG("bootstrap_nodes:   \"%s\"", CONFIG.net_bootstrap_nodes().c_str());
+		INFOLOG("=======================================");
 	}
 	catch (const std::exception& e) {
 		LOG_TRACE("main", "Exception occurred: %s", e.what());
@@ -428,7 +454,7 @@ bool init_settings_from_cfgfile(lt::settings_pack &settings) {
 
 //==============================================================================
 //
-// function name: init_settings
+// function name: init_settings_hardcoded
 // description:   this is an important function because for this program to
 // actually execute what is expected of it, the network connections need to 
 // be operational ando do all the configuration related to it.
@@ -471,12 +497,12 @@ int dump_config_values() {
 
 	try {
 		Config& config = Config::get();
-		CONFIG_LOG("ipv6_enabled:        %s", CONFIG.net_ipv6_enabled() ? "true" : "false");
-		CONFIG_LOG("enable_incoming_utp: %s", CONFIG.net_incoming_utp() ? "true" : "false");
-		CONFIG_LOG("enable_outgoing_utp: %s", CONFIG.net_outgoing_utp() ? "true" : "false");
-		CONFIG_LOG("Listen interface   \"%s\"", CONFIG.net_listen_ifaces().c_str());
-		CONFIG_LOG("Listen interface   \"%s\"", CONFIG.net_outgoing_ifaces().c_str());
-		CONFIG_LOG("bootstrap_nodes:   \"%s\"", CONFIG.net_bootstrap_nodes().c_str());
+		CONFIG_LOG("ipv6_enabled:         %s", CONFIG.net_ipv6_enabled() ? "true" : "false");
+		CONFIG_LOG("enable_incoming_utp:  %s", CONFIG.net_incoming_utp() ? "true" : "false");
+		CONFIG_LOG("enable_outgoing_utp:  %s", CONFIG.net_outgoing_utp() ? "true" : "false");
+		CONFIG_LOG("listen interface     \"%s\"", CONFIG.net_listen_ifaces().c_str());
+		CONFIG_LOG("outgoing interface   \"%s\"", CONFIG.net_outgoing_ifaces().c_str());
+		CONFIG_LOG("bootstrap_nodes:     \"%s\"", CONFIG.net_bootstrap_nodes().c_str());
 
 		CONFIG_LOG("Console Logging: %s", config.log_to_console() ? "Enabled" : "Disabled");
 		CONFIG_LOG("Log File: %s", config.logfile_path().c_str());
