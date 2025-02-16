@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?> 
+
+<!--  ============================================================================================
+# Property Sheet:  Common Paths Definitions [common_paths.props]
+# Author:          Guillaume Plante
+# Description:     Defines all paths common to projects in the solution
+#                  Specific Projects should then defines the following:
+#
+#                  - SourcesDirectory
+#                  - TmpBuildFilesRootDirectory
+#                  - ProjectConfigDir
+#                  - ProjectBuildScriptsDirectory
+#
+#
+#     ============================================================================================  -->
+  
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="CommonPathsDefinitions">
+     <SolutionRootDirectory>$(ProjectDir)..\</SolutionRootDirectory>
+     <ExternalDirectory>$(SolutionRootDirectory)external\</ExternalDirectory>
+     <SQLiteDirectory>$(ExternalDirectory)sqlite\</SQLiteDirectory>
+     <SQLiteIncludeDirectory>$(SQLiteDirectory)src\</SQLiteIncludeDirectory>
+     <SQLiteLibraryDirectory>$(SQLiteDirectory)bin\dll-win-x64\</SQLiteLibraryDirectory>
+     <DocumentationDirectory>$(SolutionRootDirectory)doc\</DocumentationDirectory>
+     <ConfigDirectory>$(SolutionRootDirectory)config\</ConfigDirectory>
+     <ExecutablesDirectory>$(SolutionRootDirectory)bin\</ExecutablesDirectory>
+     <VsDirectory>$(ProjectDir)</VsDirectory>
+     <LibTorrentDirectory>$(ExternalDirectory)libtorrent\</LibTorrentDirectory>
+     <LibTorrentInstallDirectory>$(LibTorrentDirectory)install\</LibTorrentInstallDirectory>
+     <LibTorrentIncludeDirectory>$(LibTorrentDirectory)include\</LibTorrentIncludeDirectory>
+     <SrcCommonDirectory>$(SolutionRootDirectory)src\common\</SrcCommonDirectory>
+     <ScriptsDirectory>$(SolutionRootDirectory)scripts\</ScriptsDirectory>
+     <ResourcesDirectory>$(SolutionRootDirectory)resources\</ResourcesDirectory>
+     <BinariesDirectory>$(ProjectDir)bin\</BinariesDirectory>
+     <COMMON_PATHS_INCLUDED>yes</COMMON_PATHS_INCLUDED>
+  </PropertyGroup>  
+</Project>

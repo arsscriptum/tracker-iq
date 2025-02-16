@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?> 
+
+<!--  ============================================================================================
+# Property Sheet:  Common Config [common_config.props]
+# Author:          Guillaume Plante
+# Description:     Defines the common configuration settings 
+#
+#     ============================================================================================  -->
+  
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="CommonConfig">
+     <UsingQt5>0</UsingQt5>
+     <UsingWinsock>0</UsingWinsock>
+     <UsingOpenSSL>1</UsingOpenSSL>
+     <UsingJSMNLib>1</UsingJSMNLib>
+     <UsingHTTPLib>1</UsingHTTPLib>
+     <COMMON_CONFIG_INCLUDED>yes</COMMON_CONFIG_INCLUDED>
+  </PropertyGroup>  
+</Project>

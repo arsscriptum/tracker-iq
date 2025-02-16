@@ -3,33 +3,10 @@
 
   <!-- General Environment values -->
   <PropertyGroup Label="ServiceMacros">
-     <TempRoot>$(ProjectDir)</TempRoot>
-     <UsingQt5>0</UsingQt5>
-     <UsingWinsock>0</UsingWinsock>
-     <UsingOpenSSL>1</UsingOpenSSL>
-     <UsingJSMNLib>1</UsingJSMNLib>
-     <UsingHTTPLib>1</UsingHTTPLib>
-     <SolutionRootDirectory>$(ProjectDir)..\</SolutionRootDirectory>
-     <ExternalDirectory>$(SolutionRootDirectory)external\</ExternalDirectory>
-     <SQLiteDirectory>$(ExternalDirectory)sqlite\</SQLiteDirectory>
-     <SQLiteIncludeDirectory>$(SQLiteDirectory)src\</SQLiteIncludeDirectory>
-     <SQLiteLibraryDirectory>$(SQLiteDirectory)bin\dll-win-x64\</SQLiteLibraryDirectory>
-     <DocumentationDirectory>$(SolutionRootDirectory)doc\</DocumentationDirectory>
-     <ConfigDirectory>$(SolutionRootDirectory)config\</ConfigDirectory>
-     <ExecutablesDirectory>$(SolutionRootDirectory)bin\</ExecutablesDirectory>
-     <VsDirectory>$(ProjectDir)</VsDirectory>
+      <SourcesDirectory>$(SolutionRootDirectory)src\dhtd\</SourcesDirectory>
+    <TmpBuildFilesRootDirectory>$(ProjectDir)obj\dhtd\</TmpBuildFilesRootDirectory>
      <DhtdBuildScriptsDirectory>$(VsDirectory)build.dhtd\</DhtdBuildScriptsDirectory>
      <DhtdConfigDir>$(ConfigDirectory)dhtd\</DhtdConfigDir>
-     <LibTorrentDirectory>$(ExternalDirectory)libtorrent\</LibTorrentDirectory>
-     <LibTorrentInstallDirectory>$(LibTorrentDirectory)install\</LibTorrentInstallDirectory>
-     <LibTorrentIncludeDirectory>$(LibTorrentDirectory)include\</LibTorrentIncludeDirectory>
-     <SourcesDirectory>$(SolutionRootDirectory)src\dhtd\</SourcesDirectory>
-     <SrcCommonDirectory>$(SolutionRootDirectory)src\common\</SrcCommonDirectory>
-     <ScriptsDirectory>$(SolutionRootDirectory)scripts\</ScriptsDirectory>
-     <ResourcesDirectory>$(SolutionRootDirectory)resources\</ResourcesDirectory>
-     <TmpBuildFilesRootDirectory>$(ProjectDir)obj\dhtd\</TmpBuildFilesRootDirectory>
-     <BinariesDirectory>$(ProjectDir)bin\</BinariesDirectory>
-     <AppResourceFile>$(TmpBuildFilesRootDirectory)app_resource.qrc</AppResourceFile>
   </PropertyGroup> 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <CharacterSet>NotSet</CharacterSet>
@@ -76,10 +53,8 @@
       <HTTPLib_Defines>USING_HTTPLIB;CPPHTTPLIB_OPENSSL_SUPPORT</HTTPLib_Defines>
     </PropertyGroup>
 
-
     <PropertyGroup Label="TorrentsLib">
       <TorrentsLib_Defines>USING_LIBTORRENTS</TorrentsLib_Defines>
-      
       <PATH_LIBTORRENTS_LIB_64_MT>$(LibTorrentInstallDirectory)\MT</PATH_LIBTORRENTS_LIB_64_MT>
       <PATH_LIBTORRENTS_LIB_64_MTd>$(LibTorrentInstallDirectory)\MTd</PATH_LIBTORRENTS_LIB_64_MTd>
       <TorrentsLib_Include_Directory>$(LibTorrentIncludeDirectory)</TorrentsLib_Include_Directory>
@@ -100,6 +75,7 @@
       <AdditionalIncludeDirectories>$(BOOST_ROOT);$(HTTPLIB_RootDirectory);$(JSMNLIB_RootDirectory);$(TorrentsLib_Include_Directory);$(OPENSSL_INCLUDE);$(SrcCommonDirectory);$(SourcesDirectory);$(SQLiteIncludeDirectory);$(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_SQLITE3;NO_DATABASE_IMPL;$(JSMN_Defines);$(HTTPLib_Defines);$(OpenSSL_Defines);CCC_STATIC_LINKING;_CRT_SECURE_NO_WARNINGS;CC_WINAPP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalOptions>/nologo /MP4 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <!-- 
         SUBSYSTEM; Console or Windows
@@ -144,7 +120,6 @@
       <AdditionalLibraryDirectories>$(PATH_LIBTORRENTS_LIB_64_MT);$(PATH_OPENSSL_LIB_64_MT);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>  
-
 </Project>
 
 

@@ -10,11 +10,6 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <PropertyGroup Label="QtConf">
-    <QtVersion>5.12.4</QtVersion>
-    <QTDIR>$(QtRootPath)</QTDIR>
-    <QtExternalDir>$(QtRootPath)</QtExternalDir>
-  </PropertyGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{ce47123f-6119-4e1c-a45d-37392fb9034b}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -22,17 +17,14 @@
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="$(ProjectDir)cfg\common_config.props" Label="ProjectConfig" />
+  <Import Project="$(ProjectDir)cfg\common_paths.props" Label="ProjectConfig" />
   <Import Project="$(ProjectDir)cfg\dhtd.props" Label="ProjectConfig" />
   <Import Project="$(ProjectDir)cfg\dejainsight.props" Condition="'$(dejainsight_integration)' == ''" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v142</PlatformToolset>
     <LinkIncremental>false</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <CharacterSet>NotSet</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -41,16 +33,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>dhtd-d</TargetName>
   </PropertyGroup>
-  <ItemGroup>
-    <RootQRCFiles Include="$(SolutionDir)*.qrc" />
-    <AllPs1Files Include="$(SolutionDir)res\**\*.ps1" />
-    <RCCFiles Include="$(SolutionDir)*.rcc" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <ImportGroup Label="ExtensionSettings">
-  </ImportGroup>
-  <ImportGroup Label="Shared">
-  </ImportGroup>
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -65,12 +48,6 @@
     <PreBuildEvent>
       <Command>$(ScriptsDirectory)prepare-build.bat</Command>
     </PreBuildEvent>
-    <ClCompile>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/nologo /MP4 %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ClCompile>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/nologo /MP4 %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ResourceCompile Include="$(SourcesDirectory)resources.rc" />
@@ -78,6 +55,22 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <Target Name="DumpEnvironment"  BeforeTargets="Build">
+        <Message Text="=====================================================================================================================" />
+        <Message Text="   Default Property Sheets: $(VCTargetsPath)\Microsoft.Cpp.Default.props" Importance="high" />
+        <Message Text="   Cpp Property Sheets:     $(VCTargetsPath)\Microsoft.Cpp.props" Importance="high" />
+        <Message Text="   User Property Sheets:    $(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Importance="high" />
+        <Message Text="   COMMON_PATHS_INCLUDED:   $(COMMON_PATHS_INCLUDED)" Importance="high" />
+        <Message Text="   COMMON_CONFIG_INCLUDED:  $(COMMON_CONFIG_INCLUDED)" Importance="high" />
+        <Message Text="====================================================================================================================" />
+        <Message Text=""/>
+  </Target>
+  <PropertyGroup>
+      <BeforeBuildDependsOn>
+        DumpEnvironment;
+      </BeforeBuildDependsOn>
+  </PropertyGroup>
+  <Target Name="BeforeBuild" DependsOnTargets="$(BeforeBuildDependsOn)"/>
   <Target Name="CustomClean" BeforeTargets="BeforeBuild">
     <Message Text="Custom Clean" Importance="high" />
     <ItemGroup>
@@ -86,9 +79,6 @@
       <_CustomFilesToDelete Include="$(IntDir)" />
     </ItemGroup>
     <Delete Files="@(_CustomFilesToDelete)" />
-  </Target>
-  <Target Name="RunMakeDeps">
-    <Exec Command="pwsh.exe -ExecutionPolicy Bypass -File &quot;$(ScriptsDirectory)MakeDeps.ps1&quot;" />
   </Target>
   <Target Name="CheckEnvs" BeforeTargets="BeforeBuild">
     <Message Text="=====================================================================================================================" />
@@ -138,7 +128,8 @@
     <None Include="$(ScriptsDirectory)GenerateAppVersion.ps1" />
     <None Include="$(ScriptsDirectory)prepare-build.bat" />
     <None Include="$(ScriptsDirectory)post-build.bat" />
-    <None Include="..\.gitignore" />
-    <None Include="..\doc\dhtsrv.md" />
+    <None Include="$(SolutionRootDirectory).gitignore" />
+    <None Include="$(DocumentationDirectory)dhtsrv.md" />
   </ItemGroup>
+
 </Project>
