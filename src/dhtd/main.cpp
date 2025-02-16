@@ -181,9 +181,6 @@ int main(int argc, TCHAR** argv, TCHAR envp)
 
 	dump_config_values();
 
-
-
-
 	lt::settings_pack settings;
 	init_settings_from_cfgfile(settings);
 	
