@@ -58,30 +58,19 @@
   <PropertyGroup>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-    </ClCompile>
+  <ItemDefinitionGroup>
     <PostBuildEvent>
-      <Command>copy $(DejaInsight_LinkOpt_Dll) $(ExecutablesDirectory) 
-copy $(LibtorrentDllBinary) $(ExecutablesDirectory)
-copy $(DhtdConfigDir)*.ini  $(ExecutablesDirectory) </Command>
+      <Command>$(ScriptsDirectory)post-build.bat $(ExecutablesDirectory) $(DejaInsight_LinkOpt_Dll) $(LibtorrentDllBinary) $(DhtdConfigDir)*.ini</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>$(ScriptsDirectory)prepare-build.bat</Command>
     </PreBuildEvent>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/nologo /MP4 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <PostBuildEvent>
-      <Command>copy $(DejaInsight_LinkOpt_Dll) $(ExecutablesDirectory) 
-copy $(LibtorrentDllBinary) $(ExecutablesDirectory)
-copy $(DhtdConfigDir)*.ini  $(ExecutablesDirectory) </Command>
-    </PostBuildEvent>
+    <ClCompile>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/nologo /MP4 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ResourceCompile Include="$(SourcesDirectory)resources.rc" />
@@ -148,6 +137,8 @@ copy $(DhtdConfigDir)*.ini  $(ExecutablesDirectory) </Command>
     <None Include="$(DhtdConfigDir)dhtd.ini" />
     <None Include="$(ScriptsDirectory)GenerateAppVersion.ps1" />
     <None Include="$(ScriptsDirectory)prepare-build.bat" />
+    <None Include="$(ScriptsDirectory)post-build.bat" />
+    <None Include="..\.gitignore" />
     <None Include="..\doc\dhtsrv.md" />
   </ItemGroup>
 </Project>

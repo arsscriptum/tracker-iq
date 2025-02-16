@@ -101,10 +101,20 @@
     <None Include="$(TiqBuildScriptsDirectory)Build.bat">
       <Filter>scripts</Filter>
     </None>
-    <None Include="$(ScriptsDirectory)GenerateAppVersion.ps1" />
-    <None Include="$(ScriptsDirectory)prepare-build.bat" />
     <None Include="..\doc\dhtsrv.md">
       <Filter>doc</Filter>
+    </None>
+    <None Include="$(ScriptsDirectory)GenerateAppVersion.ps1">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="$(ScriptsDirectory)prepare-build.bat">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\.gitignore">
+      <Filter>misc</Filter>
+    </None>
+    <None Include="$(ScriptsDirectory)post-build.bat">
+      <Filter>scripts</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -128,6 +138,9 @@
     </Filter>
     <Filter Include="res">
       <UniqueIdentifier>{f4fc18a3-f2f0-4b2c-b034-49fda72ed8d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="misc">
+      <UniqueIdentifier>{8481b9a2-64da-44a2-9e1f-c36f5ca913cf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

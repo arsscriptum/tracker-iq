@@ -30,6 +30,7 @@ vs/obj/**
 ipch/
 ipch/**
 
+scripts/version_no_update
 scripts/test
 scripts/test/**
 

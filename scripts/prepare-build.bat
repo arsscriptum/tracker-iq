@@ -6,6 +6,13 @@ echo -------------------------------------------------
 echo Running GenerateAppVersion.ps1...
 echo -------------------------------------------------
 
+REM Check for the "version_no_update" file and exit if it exists
+if exist "%~dp0version_no_update" (
+    echo "%~dp0version_no_update file found. Exiting without updating version."
+    popd
+    exit /b 0
+)
+
 REM Execute the PowerShell script
 powershell.exe -noni -nop -f "%~dp0GenerateAppVersion.ps1"
 

@@ -96,7 +96,6 @@
 
   <ItemDefinitionGroup>
     <ClCompile>
-      <PrecompiledHeader>Create</PrecompiledHeader>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(BOOST_ROOT);$(HTTPLIB_RootDirectory);$(JSMNLIB_RootDirectory);$(TorrentsLib_Include_Directory);$(OPENSSL_INCLUDE);$(SrcCommonDirectory);$(SourcesDirectory);$(SQLiteIncludeDirectory);$(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_SQLITE3;NO_DATABASE_IMPL;$(JSMN_Defines);$(HTTPLib_Defines);$(OpenSSL_Defines);CCC_STATIC_LINKING;_CRT_SECURE_NO_WARNINGS;CC_WINAPP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -114,9 +113,9 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PreprocessorDefinitions>DEBUG;DEVELOPMENT;DEBUG_INFO;WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -128,7 +127,6 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PreprocessorDefinitions>RELEASE;DEVELOPMENT;DEBUG_INFO;WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>

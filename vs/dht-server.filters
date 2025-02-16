@@ -122,7 +122,13 @@
     <None Include="$(SolutionRootDirectory)buildcfg.ini">
       <Filter>scripts</Filter>
     </None>
-    <None Include="$(SourcesDirectory)Update-SubModules.ps1">
+    <None Include="$(ScriptsDirectory)Update-SubModules.ps1">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="$(ScriptsDirectory)pre-build.bat">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="$(ScriptsDirectory)post-build.bat">
       <Filter>scripts</Filter>
     </None>
     <None Include="$(DhtdConfigDir)dhtd.ini">
