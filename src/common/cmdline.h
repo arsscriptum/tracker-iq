@@ -13,36 +13,28 @@
 #include <string>
 #include <memory>
 #include <sstream>
+#include <map>
 #include <algorithm>
 #include "log.h"
 
 #include "cmdline_opt_values.h"
 
 // New modern C++ structure with a constructor for easier initialization.
-struct SCmdlineOptValues {
-    std::vector<std::string> options;
-    std::string description;
-    std::string uid;
-
-    // Constructor to initialize all members.
-    SCmdlineOptValues(const std::vector<std::string>& opts,
-        const std::string& desc,
-        const std::string& id)
-        : options(opts), description(desc), uid(id) {}
-};
 
 class CmdlineOption
 {
 public:
+    CmdlineOption()
+        : _options(), _description(""), _typeId(cmdOpT::Unknown) {}
     // Constructor taking options and description. _uid can be set later.
-    CmdlineOption(const std::vector<std::string>& opt, const std::string& desc)
-        : _options(opt), _description(desc) {}
+    CmdlineOption(const std::vector<std::string>& opt, const std::string& desc, cmdOpT id)
+        : _options(opt), _description(desc), _typeId(id) {}
 
     // New constructor that accepts an SCmdlineOptValues instance.
     CmdlineOption(const SCmdlineOptValues& optValues)
-        : _options(optValues.options),
-        _description(optValues.description),
-        _typeId(optValues.type)
+        : _options(optValues._options),
+        _description(optValues._description),
+        _typeId(optValues._type)
     {}
 
     bool isValid(std::string option) {
@@ -121,9 +113,11 @@ public:
     // Updated addOption that takes the new structure type.
     void addOption(const SCmdlineOptValues& optVal)
     {
-        CmdlineOption option(optVal.options, optVal.description);
-        option._uid = optVal.uid;
+        CmdlineOption option(optVal._options, optVal._description);
+        option._typeId = optVal._type;
         options.push_back(option);
+        int type_id = (int)optVal._type;
+        options_map[type_id] = option;
     }
 
     bool isSet(CmdlineOption& cmdlineOption)
@@ -165,7 +159,7 @@ private:
     std::vector <std::string> tokens;
     std::vector<CmdlineOption> options;
 
-    std::map<int, DHTReplyData> dht_replies;
+    std::map<int, CmdlineOption> options_map;
 };
 
 class CmdLineUtil

@@ -17,19 +17,20 @@ typedef unsigned char uint8_t;
 #endif
 
 
-enum class cmdlineOptTypes : uint8_t { Help, Verbose, NoBanner, Quiet, cfgfilePath };
+enum class cmdlineOptTypes : uint8_t { Unknown, Help, Verbose, NoBanner, Quiet, cfgfilePath };
 using cmdOpT = cmdlineOptTypes;
 
 struct SCmdlineOptValues {
-    std::vector<std::string> options;
-    std::string description;
-    cmdlineOptTypes type;;
-
-    // Constructor to initialize all fields at once.
-    SCmdlineOptValues(const std::vector<std::string>& opts, 
-                        const std::string& desc, 
-                        cmdOpT id)
-        : options(opts), description(desc), type(id) {}
+    std::vector<std::string> _options;
+    std::string _description;
+    cmdOpT _type;
+    SCmdlineOptValues()
+        : _options(), _description(""), _type(cmdOpT::Unknown) {}
+    // Constructor to initialize all members.
+    SCmdlineOptValues(const std::vector<std::string>& opts,
+        const std::string& desc,
+        cmdOpT id)
+        : _options(opts), _description(desc), _type(id) {}
 };
 
 #endif // __CMDLINE_OPT_VALUES_H__

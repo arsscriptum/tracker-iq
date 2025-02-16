@@ -87,9 +87,12 @@
     <ClInclude Include="$(SourcesDirectory)cmdline_opt_values.h">
       <Filter>headers</Filter>
     </ClInclude>
+    <ClInclude Include="$(SrcCommonDirectory)enum_to_string.h">
+      <Filter>headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(SolutionRootDirectory)dhtsrv.md">
+    <None Include="$(DocumentationDirectory)dhtsrv.md">
       <Filter>doc</Filter>
     </None>
     <None Include="$(DhtdConfigDir)dhtd.ini">

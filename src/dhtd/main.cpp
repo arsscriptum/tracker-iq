@@ -106,11 +106,11 @@ int main(int argc, TCHAR** argv, TCHAR envp)
 
 	CmdlineParser* inputParser = CmdLineUtil::get()->parser();
 
-	SCmdlineOptValues helpOptionT(       { "-h", "--help" }     , "Display help information" , "id_help");
-	SCmdlineOptValues verboseOptionT(    { "-v", "--verbose" }  , "verbose output"           , "id_verbose");
-	SCmdlineOptValues noBannerOptionT(   { "-n", "--nobanner" } , "no banner"                , "id_nobanner");
-	SCmdlineOptValues quietOptionT(      { "-q", "--quiet" }    , "quiet"                    , "id_quiet");
-	SCmdlineOptValues cfgfilePathOptionT({ "-c", "--config" }   , "config file"              , "id_cfgfile");
+	SCmdlineOptValues helpOptionT(       { "-h", "--help" }     , "Display help information" , cmdOpT::Help);
+	SCmdlineOptValues verboseOptionT(    { "-v", "--verbose" }  , "verbose output"           , cmdOpT::Verbose);
+	SCmdlineOptValues noBannerOptionT(   { "-n", "--nobanner" } , "no banner"                , cmdOpT::NoBanner);
+	SCmdlineOptValues quietOptionT(      { "-q", "--quiet" }    , "quiet"                    , cmdOpT::Quiet);
+	SCmdlineOptValues cfgfilePathOptionT({ "-c", "--config" }   , "config file"              , cmdOpT::cfgfilePath);
 
 
 

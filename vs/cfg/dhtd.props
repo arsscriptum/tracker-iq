@@ -9,16 +9,17 @@
      <UsingOpenSSL>1</UsingOpenSSL>
      <UsingJSMNLib>1</UsingJSMNLib>
      <UsingHTTPLib>1</UsingHTTPLib>
-
      <SolutionRootDirectory>$(ProjectDir)..\</SolutionRootDirectory>
      <ExternalDirectory>$(SolutionRootDirectory)external\</ExternalDirectory>
      <SQLiteDirectory>$(ExternalDirectory)sqlite\</SQLiteDirectory>
      <SQLiteIncludeDirectory>$(SQLiteDirectory)src\</SQLiteIncludeDirectory>
      <SQLiteLibraryDirectory>$(SQLiteDirectory)bin\dll-win-x64\</SQLiteLibraryDirectory>
+     <DocumentationDirectory>$(SolutionRootDirectory)doc\</DocumentationDirectory>
+     <ConfigDirectory>$(SolutionRootDirectory)config\</ConfigDirectory>
      <ExecutablesDirectory>$(SolutionRootDirectory)bin\</ExecutablesDirectory>
      <VsDirectory>$(ProjectDir)</VsDirectory>
      <DhtdBuildScriptsDirectory>$(VsDirectory)build.dhtd\</DhtdBuildScriptsDirectory>
-     <DhtdConfigDir>$(SolutionRootDirectory)config\dhtd\</DhtdConfigDir>
+     <DhtdConfigDir>$(ConfigDirectory)dhtd\</DhtdConfigDir>
      <LibTorrentDirectory>$(ExternalDirectory)libtorrent\</LibTorrentDirectory>
      <LibTorrentInstallDirectory>$(LibTorrentDirectory)install\</LibTorrentInstallDirectory>
      <LibTorrentIncludeDirectory>$(LibTorrentDirectory)include\</LibTorrentIncludeDirectory>

@@ -114,6 +114,7 @@ copy $(DhtdConfigDir)*.ini  $(ExecutablesDirectory) </Command>
     <ClInclude Include="$(ExternalDirectory)jsmn\jsmn.h" />
     <ClInclude Include="$(SrcCommonDirectory)cmdline.h" />
     <ClInclude Include="$(SrcCommonDirectory)log.h" />
+    <ClInclude Include="$(SrcCommonDirectory)enum_to_string.h" />
     <ClInclude Include="$(SrcCommonDirectory)macros.h" />
     <ClInclude Include="$(SrcCommonDirectory)nowarns.h" />
     <ClInclude Include="$(SourcesDirectory)stdafx.h" />
@@ -146,7 +147,7 @@ copy $(DhtdConfigDir)*.ini  $(ExecutablesDirectory) </Command>
     <None Include="$(TiqBuildScriptsDirectory)buildcfg.ini" />
     <None Include="$(DhtdConfigDir)dhtd.ini" />
     <None Include="$(SolutionRootDirectory)dhtsrv.md" />
-    <None Include="..\scripts\GenerateAppVersion.ps1" />
-    <None Include="..\scripts\prepare-build.bat" />
+    <None Include="$(ScriptsDirectory)GenerateAppVersion.ps1" />
+    <None Include="$(ScriptsDirectory)prepare-build.bat" />
   </ItemGroup>
 </Project>
