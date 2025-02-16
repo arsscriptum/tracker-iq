@@ -16,6 +16,8 @@
 #include <algorithm>
 #include "log.h"
 
+#include "cmdline_opt_values.h"
+
 // New modern C++ structure with a constructor for easier initialization.
 struct SCmdlineOptValues {
     std::vector<std::string> options;
@@ -40,7 +42,7 @@ public:
     CmdlineOption(const SCmdlineOptValues& optValues)
         : _options(optValues.options),
         _description(optValues.description),
-        _uid(optValues.uid)
+        _typeId(optValues.type)
     {}
 
     bool isValid(std::string option) {
@@ -62,7 +64,7 @@ public:
 
     std::vector<std::string> _options;
     std::string _description;
-    std::string _uid;
+    cmdOpT _typeId;
 };
 
 
@@ -70,6 +72,7 @@ public:
 class CmdlineParser
 {
 public:
+   
     CmdlineParser() {};
     void reset(int& argc, char** argv)
     {
@@ -161,6 +164,8 @@ private:
     }
     std::vector <std::string> tokens;
     std::vector<CmdlineOption> options;
+
+    std::map<int, DHTReplyData> dht_replies;
 };
 
 class CmdLineUtil

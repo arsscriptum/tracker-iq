@@ -91,6 +91,7 @@ int dump_config_values();
 bool init_settings_from_cfgfile(lt::settings_pack& settings);
 bool init_settings_hardcoded(lt::settings_pack& settings);
 
+uint8_t rr = 3;
 
 int main(int argc, TCHAR** argv, TCHAR envp)
 {
@@ -110,6 +111,8 @@ int main(int argc, TCHAR** argv, TCHAR envp)
 	SCmdlineOptValues noBannerOptionT(   { "-n", "--nobanner" } , "no banner"                , "id_nobanner");
 	SCmdlineOptValues quietOptionT(      { "-q", "--quiet" }    , "quiet"                    , "id_quiet");
 	SCmdlineOptValues cfgfilePathOptionT({ "-c", "--config" }   , "config file"              , "id_cfgfile");
+
+
 
 	CmdlineOption cmdlineOptionHelp(helpOptionT);
 	CmdlineOption cmdlineOptionVerbose(verboseOptionT);
