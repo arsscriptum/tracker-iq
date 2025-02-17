@@ -241,8 +241,8 @@ bool Config::parse(const std::string& configPath) {
 
     _peer_fingerprint = reader.Get("network", "peer_fingerprint", "");
     _bootstrap_nodes = reader.Get("network", "bootstrap_nodes", "");
-    _outgoing_ifaces = reader.Get("network", "_outgoing_ifaces", "");
-    _listen_ifaces = reader.Get("network", "listen_ifaces", "0");
+    _outgoing_ifaces = reader.Get("network", "outgoing_ifaces", "");
+    _listen_ifaces = reader.Get("network", "listen_ifaces", "");
 
     // [Log] section settings
     _enable_console = reader.GetBoolean("log", "console", false);

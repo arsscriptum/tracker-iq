@@ -37,6 +37,9 @@
 #include "config.h"
 #include "version.h"
 #include "DejaLib.h"
+#include <chrono>
+#include <ctime>
+#include <winsock2.h> // for ntohs, inet_ntoa. On Linux, use <arpa/inet.h>
 
 #include <libtorrent/settings_pack.hpp>
 #include <libtorrent/magnet_uri.hpp>
@@ -61,7 +64,14 @@ using namespace std::chrono_literals;
 #pragma message( "Compiling " __FILE__ )
 #pragma message( "Last modified on " __TIMESTAMP__ )
 
-
+// ===============================================
+// DHTNode : Structure to hold parsed node information
+// ===============================================
+struct DHTNode {
+	std::string nodeId;
+	std::string ip;
+	uint16_t port;
+};
 
 // ===============================================
 // DHTReplyData : Struct to store DHT Reply Data
@@ -90,8 +100,16 @@ void process_alerts(lt::session& s);
 int dump_config_values();
 bool init_settings_from_cfgfile(lt::settings_pack& settings);
 bool init_settings_hardcoded(lt::settings_pack& settings);
+void process_dht_reply_alert(const lt::dht_reply_alert* a);
+std::vector<DHTNode> parseDHTNodes(const std::string& nodes);
+
+std::string toLocalDateTime(std::chrono::system_clock::time_point systemTime);
 
 uint8_t rr = 3;
+
+// At startup, capture both time points:
+const std::chrono::steady_clock::time_point g_startupSteady = std::chrono::steady_clock::now();
+std::chrono::system_clock::time_point g_startupSystem = std::chrono::system_clock::now();
 
 int main(int argc, TCHAR** argv, TCHAR envp)
 {
@@ -225,6 +243,9 @@ bool pre_process_alert(const lt::alert* a) {
 	case lt::dht_reply_alert::alert_type:
 	{
 		LOG_DEBUG("dhtd::process_alerts", "received alert type dht_reply_alert (%d)", lt::dht_reply_alert::alert_type);
+		
+		if (auto dhtReply = lt::alert_cast<lt::dht_reply_alert>(a)) {
+		}
 	}
 	break;
 
@@ -370,7 +391,7 @@ void process_alerts(lt::session& s) {
 			bool pre_processed = pre_process_alert(a); // Debug function
 			if (!pre_processed) {
 				INFOLOG("alert failed preprocess.");
-				continue;
+				//continue;
 			}
 			if (auto dht_a = lt::alert_cast<lt::dht_announce_alert>(a)) {
 				INFOLOG("[ DHT ANNOUNCE ]\t\t[%s] %s", dht_a->info_hash.to_string().c_str(), dht_a->ip.to_string().c_str());
@@ -378,6 +399,9 @@ void process_alerts(lt::session& s) {
 			}
 			else if (auto dht_r = lt::alert_cast<lt::dht_reply_alert>(a)) {
 				INFOLOG("[ DHT REPLY ]\t\t[%s] -> %d", dht_r->url.c_str(), dht_r->num_peers);
+			}
+			else {
+				INFOLOG("[ DHT REPLY ] received unknown alert type (%d)", a->type());
 			}
 		}
 		// Always check if it's time to log
@@ -434,8 +458,8 @@ bool init_settings_from_cfgfile(lt::settings_pack &settings) {
 		NOTICELOG("libtorrent settings");
 		INFOLOG("enable_incoming_utp: %s", CONFIG.net_incoming_utp() ? "true" : "false");
 		INFOLOG("enable_outgoing_utp: %s", CONFIG.net_outgoing_utp() ? "true" : "false");
-		INFOLOG("Listen interface   \"%s\"", CONFIG.net_listen_ifaces().c_str());
-		INFOLOG("Listen interface   \"%s\"", CONFIG.net_outgoing_ifaces().c_str());
+		INFOLOG("listen_interfaces     \"%s\"", CONFIG.net_listen_ifaces().c_str());
+		INFOLOG("outgoing_interfaces   \"%s\"", CONFIG.net_outgoing_ifaces().c_str());
 		INFOLOG("bootstrap_nodes:   \"%s\"", CONFIG.net_bootstrap_nodes().c_str());
 		INFOLOG("=======================================");
 	}
@@ -512,4 +536,73 @@ int dump_config_values() {
 	}
 
 	return 0;
+}
+
+std::vector<DHTNode> parseDHTNodes(const std::string& nodes) {
+	std::vector<DHTNode> result;
+	const size_t nodeSize = 26;
+	for (size_t i = 0; i + nodeSize <= nodes.size(); i += nodeSize) {
+		DHTNode node;
+		// Extract node id (20 bytes)
+		node.nodeId = nodes.substr(i, 20);
+
+		// Extract IP (4 bytes)
+		uint32_t ipRaw;
+		memcpy(&ipRaw, nodes.data() + i + 20, 4);
+		// The IP is in network byte order; use inet_ntoa to convert to string.
+		struct in_addr addr;
+		addr.s_addr = ipRaw;
+		node.ip = inet_ntoa(addr);
+
+		// Extract port (2 bytes) and convert from network to host order.
+		uint16_t portRaw;
+		memcpy(&portRaw, nodes.data() + i + 24, 2);
+		node.port = ntohs(portRaw);
+
+		result.push_back(node);
+	}
+	return result;
+}
+
+void process_dht_reply_alert(const lt::dht_reply_alert* dhtReply)
+{
+	if (dhtReply == nullptr) {
+		return;
+	}
+
+
+	// Log basic information.
+	INFOLOG("[DHT REPLY] tracker_url: %s, torrent_name: %s, num_peers %d ",dhtReply->tracker_url(),dhtReply->torrent_name(),dhtReply->num_peers);
+
+	// Assuming dhtReply->nodes is a std::string containing the compact node info.
+	/*std::string nodesPayload = dhtReply->n;  // Adjust this line if your API differs.
+	if (!nodesPayload.empty()) {
+		auto peers = parseDHTNodes(nodesPayload);
+		std::cout << "[DHT REPLY] Received " << peers.size() << " peers:" << std::endl;
+		for (const auto& peer : peers) {
+			std::cout << "   Peer IP: " << peer.ip << ", Port: " << peer.port << std::endl;
+			// Optionally, log the node ID as well:
+			// std::cout << "   Node ID: " << peer.nodeId << std::endl;
+		}
+	}
+	else {
+		std::cout << "[DHT REPLY] No nodes payload available." << std::endl;
+	}*/
+	
+}
+
+
+
+std::string toLocalDateTime(std::chrono::system_clock::time_point systemTime)
+{
+	std::time_t t = std::chrono::system_clock::to_time_t(systemTime);
+	std::tm localTm;
+#if defined(_WIN32) || defined(_WIN64)
+	localtime_s(&localTm, &t);
+#else
+	localtime_r(&t, &localTm);
+#endif
+	std::ostringstream oss;
+	oss << std::put_time(&localTm, "%Y-%m-%d %H:%M:%S");
+	return oss.str();
 }

@@ -72,7 +72,7 @@ void __cdecl ErrorDescFunc(const char* channel, const char* format, ...)
 	EndOfLineEscapeTag FormatDebug1{ RED_UNDERLINED, ANSI_TEXT_COLOR_RESET };
 	EndOfLineEscapeTag FormatDebug2{ ANSI_TEXT_COLOR_WHITE, ANSI_TEXT_COLOR_RESET };
 	EndOfLineEscapeTag FormatDebug3{ CONSOLE_COLOR_YELLOW_BRIGHT , ANSI_TEXT_COLOR_RESET };
-	std::clog << FormatDebugTitle << "ERROR";
+	std::clog << FormatDebugTitle << " [E] ";
 	std::clog << FormatDebug2 << " [" << channel << "]";
 	std::clog << FormatDebug3 << " " << buf;
 }
@@ -106,8 +106,9 @@ void __cdecl DebugTraceFunc(const char* channel, const char* format, ...)
 		EndOfLineEscapeTag FormatDebug1{ RED_UNDERLINED, ANSI_TEXT_COLOR_RESET };
 		EndOfLineEscapeTag FormatDebug2{ CONSOLE_COLOR_BKGRND_WHITE_GREEN, ANSI_TEXT_COLOR_RESET };
 		EndOfLineEscapeTag FormatDebug3{ CONSOLE_COLOR_YELLOW, ANSI_TEXT_COLOR_RESET };
-		std::clog << FormatDebug2 << "[" << channel << "]";
-		std::clog << FormatDebug3 << " " << buf;
+		std::clog << FormatDebug2 << " [D] ";
+		std::clog << "[" << channel << "] ";
+		std::clog << buf;
 	}
 }
 
