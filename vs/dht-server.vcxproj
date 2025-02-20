@@ -91,12 +91,14 @@
   <ItemGroup>
     <ClInclude Include="$(ExternalDirectory)cpp-httplib\httplib.h" />
     <ClInclude Include="$(ExternalDirectory)jsmn\jsmn.h" />
+    <ClInclude Include="$(SrcCommonDirectory)cthread.h" />
     <ClInclude Include="$(SrcCommonDirectory)cmdline.h" />
     <ClInclude Include="$(SrcCommonDirectory)log.h" />
     <ClInclude Include="$(SrcCommonDirectory)enum_to_string.h" />
     <ClInclude Include="$(SrcCommonDirectory)macros.h" />
     <ClInclude Include="$(SrcCommonDirectory)nowarns.h" />
     <ClInclude Include="$(SourcesDirectory)stdafx.h" />
+    <ClInclude Include="$(SourcesDirectory)runner.h" />
     <ClInclude Include="$(SourcesDirectory)targetver.h" />
     <ClInclude Include="$(SrcCommonDirectory)ini.h" />
     <ClInclude Include="$(SrcCommonDirectory)inireader.h" />
@@ -108,12 +110,14 @@
     <ClInclude Include="$(SourcesDirectory)cmdline_opt_values.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(SrcCommonDirectory)cthread.cpp" />
     <ClCompile Include="$(SrcCommonDirectory)cmdline.cpp" />
     <ClCompile Include="$(SourcesDirectory)utils.cpp" />
     <ClCompile Include="$(SourcesDirectory)init.cpp" />
     <ClCompile Include="$(SrcCommonDirectory)log.cpp" />
     <ClCompile Include="$(SourcesDirectory)main.cpp" />
     <ClCompile Include="$(SourcesDirectory)stdafx.cpp" />
+    <ClCompile Include="$(SourcesDirectory)runner.cpp" />
     <ClCompile Include="$(SrcCommonDirectory)ini.cpp" />
     <ClCompile Include="$(SrcCommonDirectory)inireader.cpp" />
     <ClCompile Include="$(SourcesDirectory)config.cpp" />

@@ -13,7 +13,9 @@
 #include "cmdline.h"
 #include "Shlwapi.h"
 #include "log.h"
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <windows.h>
 #include <codecvt>
 #include <locale>
 #include <vector>
@@ -32,7 +34,7 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
-
+#include "runner.h"
 #include "inireader.h"
 #include "config.h"
 #include "version.h"
@@ -64,44 +66,20 @@ using namespace std::chrono_literals;
 #pragma message( "Compiling " __FILE__ )
 #pragma message( "Last modified on " __TIMESTAMP__ )
 
-// ===============================================
-// DHTNode : Structure to hold parsed node information
-// ===============================================
-struct DHTNode {
-	std::string nodeId;
-	std::string ip;
-	uint16_t port;
-};
+volatile bool stop = 0; // Flag to indicate when to stop
 
-// ===============================================
-// DHTReplyData : Struct to store DHT Reply Data
-// ===============================================
-struct DHTReplyData {
-	std::string url;
-	int num_peers;
-};
+BOOL WINAPI handle_ctrl_c(DWORD signal) {
+	if (signal == CTRL_C_EVENT) {
+		stop = 1; // Set flag when Ctrl-C is pressed
+		return TRUE;
+	}
+	return FALSE;
+}
 
-// ===============================================
-// Global storage for DHT replies
-// ===============================================
-std::map<int, DHTReplyData> dht_replies;
-int dht_reply_id = 0;  // Auto-incrementing ID
-
-// ===============================================
-// DHTReplyData Accessors 
-// ===============================================
-int get_dht_reply_id_by_url(const std::string& url);
-std::string get_dht_reply_url_by_id(int id);
-
-
-
-bool pre_process_alert(const lt::alert* a);
-void process_alerts(lt::session& s);
 int dump_config_values();
 bool init_settings_from_cfgfile(lt::settings_pack& settings);
 bool init_settings_hardcoded(lt::settings_pack& settings);
-void process_dht_reply_alert(const lt::dht_reply_alert* a);
-std::vector<DHTNode> parseDHTNodes(const std::string& nodes);
+
 
 std::string toLocalDateTime(std::chrono::system_clock::time_point systemTime);
 
@@ -206,8 +184,29 @@ int main(int argc, TCHAR** argv, TCHAR envp)
 	NOTICELOG("CHECK FOR SETTINGS VALIDITY: %s", test_listen_ifaces.c_str());
 	lt::session s(settings);
 
-	// Start processing DHT alerts
-	process_alerts(s);
+	// Register the Ctrl-C handler
+	SetConsoleCtrlHandler(handle_ctrl_c, TRUE);
+
+	printf("Press Ctrl-C to exit...\n");
+	Runner appRunner(&settings);
+	appRunner.CreateThread();
+	while (!stop) {
+		if (_kbhit()) {  // Check if a key was pressed
+			int key = _getch();  // Get the key
+
+			if (key == '1') {
+				appRunner.GetPeers();  // Convert char to int
+			}
+			else if (key == '2') {
+				appRunner.CheckDhtRunning();
+			}
+		}
+
+		Sleep(200); // Simulating work (1000ms = 1s)
+	}
+
+	printf("\nExiting gracefully...\n");
+
 
 	if (CONFIG.debug_mode_enabled()) {
 
@@ -218,202 +217,7 @@ int main(int argc, TCHAR** argv, TCHAR envp)
 	return 0;
 }
 
-bool pre_process_alert(const lt::alert* a) {
-	bool res = true;
-	switch (a->type())
-	{
-	case lt::dht_sample_infohashes_alert::alert_type:
-	{
-		LOG_DEBUG("dhtd::process_alerts", "received alert type dht_sample_infohashes_alert (%d)", lt::dht_sample_infohashes_alert::alert_type);
-	}
-	break;
 
-	case lt::dht_outgoing_get_peers_alert::alert_type:
-	{
-		LOG_DEBUG("dhtd::process_alerts", "received alert type dht_outgoing_get_peers_alert (%d)", lt::dht_outgoing_get_peers_alert::alert_type);
-	}
-	break;
-
-	case lt::dht_bootstrap_alert::alert_type:
-	{
-		LOG_DEBUG("dhtd::process_alerts", "received alert type dht_bootstrap_alert (%d)", lt::dht_bootstrap_alert::alert_type);
-	}
-	break;
-
-	case lt::dht_reply_alert::alert_type:
-	{
-		LOG_DEBUG("dhtd::process_alerts", "received alert type dht_reply_alert (%d)", lt::dht_reply_alert::alert_type);
-		
-		if (auto dhtReply = lt::alert_cast<lt::dht_reply_alert>(a)) {
-		}
-	}
-	break;
-
-	case lt::dht_announce_alert::alert_type:
-	{
-		LOG_DEBUG("dhtd::process_alerts", "received alert type dht_announce_alert (%d)", lt::dht_announce_alert::alert_type);
-	}
-	break;
-
-	case lt::dht_get_peers_alert::alert_type:
-	{
-		LOG_DEBUG("dhtd::process_alerts", "received alert type dht_get_peers_alert (%d)", lt::dht_get_peers_alert::alert_type);
-	}
-	break;
-
-	case lt::dht_error_alert::alert_type:
-	{
-		LOG_DEBUG("dhtd::process_alerts", "received alert type dht_error_alert (%d)", lt::dht_error_alert::alert_type);
-		auto dht_e = lt::alert_cast<lt::dht_error_alert>(a);
-		ERROR_DESC("dhtd::process_alerts", "operation id %d. %s %s", (unsigned int)dht_e->operation, dht_e->error.message().c_str(), dht_e->error.to_string().c_str());
-		res = false;
-	}
-	break;
-	case lt::portmap_error_alert::alert_type:
-	{
-		LOG_DEBUG("dhtd::process_alerts", "received alert type portmap_error_alert (%d)", lt::portmap_error_alert::alert_type);
-		auto dht_e = lt::alert_cast<lt::portmap_error_alert>(a);
-		ERROR_DESC("dhtd::process_alerts", "what ? \"%s\" . %s %s. transport %d. mapping %d.", dht_e->what(), dht_e->error.message().c_str(), dht_e->error.to_string().c_str(), dht_e->local_address.to_string().c_str(), (unsigned int)dht_e->map_transport, (int)dht_e->mapping);
-		res = false;
-	}
-	break;
-	
-	case lt::udp_error_alert::alert_type:
-	{
-		LOG_DEBUG("dhtd::process_alerts", "received alert type udp_error_alert (%d)", lt::udp_error_alert::alert_type);
-		if (auto* udp_e = libtorrent::alert_cast<libtorrent::udp_error_alert>(a)) {
-			ERROR_DESC("dhtd::process_alerts",
-				"UDP error: \"%s\" . %s %s. Endpoint: %s.",
-				udp_e->what(),
-				udp_e->error.message().c_str(),
-				udp_e->error.to_string().c_str(),
-				udp_e->endpoint.address().to_string().c_str());
-		}
-		res = false;
-	}
-	break;
-	case lt::dht_immutable_item_alert::alert_type:
-	{
-		LOG_DEBUG("dhtd::process_alerts", "received alert type dht_immutable_item_alert (%d)", lt::dht_immutable_item_alert::alert_type);
-	}
-	break;
-
-	case lt::dht_mutable_item_alert::alert_type:
-	{
-		LOG_DEBUG("dhtd::process_alerts", "received alert type dht_mutable_item_alert (%d)", lt::dht_mutable_item_alert::alert_type);
-	}
-	break;
-
-	case lt::dht_put_alert::alert_type:
-	{
-		LOG_DEBUG("dhtd::process_alerts", "received alert type dht_put_alert (%d)", lt::dht_put_alert::alert_type);
-	}
-	break;
-
-	case lt::dht_stats_alert::alert_type:
-	{
-		LOG_DEBUG("dhtd::process_alerts", "received alert type dht_stats_alert (%d)", lt::dht_stats_alert::alert_type);
-	}
-	break;
-
-	case lt::dht_log_alert::alert_type:
-	{
-		LOG_DEBUG("dhtd::process_alerts", "received alert type dht_log_alert (%d)", lt::dht_log_alert::alert_type);
-	}
-	break;
-
-	case lt::dht_pkt_alert::alert_type:
-	{
-		LOG_DEBUG("dhtd::process_alerts", "received alert type dht_pkt_alert (%d)", lt::dht_pkt_alert::alert_type);
-	}
-	break;
-
-	case lt::dht_get_peers_reply_alert::alert_type:
-	{
-		LOG_DEBUG("dhtd::process_alerts", "received alert type dht_get_peers_reply_alert (%d)", lt::dht_get_peers_reply_alert::alert_type);
-	}
-	break;
-
-	case lt::dht_direct_response_alert::alert_type:
-	{
-		LOG_DEBUG("dhtd::process_alerts", "received alert type dht_direct_response_alert (%d)", lt::dht_direct_response_alert::alert_type);
-	}
-	break;
-
-	case lt::dht_live_nodes_alert::alert_type:
-	{
-		LOG_DEBUG("dhtd::process_alerts", "received alert type dht_live_nodes_alert (%d)", lt::dht_live_nodes_alert::alert_type);
-	}
-	break;
-
-	default: {
-		LOG_DEBUG("dhtd::process_alerts", "received unknown alert type (%d)", a->type());
-	}
-	}
-	return res;
-}
-
-
-
-// Funnction to get the ID by URL(returns - 1 if not found)
-int get_dht_reply_id_by_url(const std::string & url) {
-	for (const auto& entry : dht_replies) {
-		if (entry.second.url == url) {
-			return entry.first;  // Return existing ID
-		}
-	}
-	return -1;  // Not found
-}
-
-// Function to get the URL by ID (returns empty string if not found)
-std::string get_dht_reply_url_by_id(int id) {
-	auto it = dht_replies.find(id);
-	if (it != dht_replies.end()) {
-		return it->second.url;
-	}
-	return "";  // Not found
-}
-
-void process_alerts(lt::session& s) {
-	auto last_log_time = std::chrono::steady_clock::now(); // Track last log time
-
-	while (true) {
-		std::vector<lt::alert*> alerts;
-		s.pop_alerts(&alerts);
-
-		bool has_alerts = false; // Track if alerts were processed
-
-		for (auto const* a : alerts) {
-			
-			std::this_thread::sleep_for(std::chrono::milliseconds(500));
-			has_alerts = true;
-
-			bool pre_processed = pre_process_alert(a); // Debug function
-			if (!pre_processed) {
-				INFOLOG("alert failed preprocess.");
-				//continue;
-			}
-			if (auto dht_a = lt::alert_cast<lt::dht_announce_alert>(a)) {
-				INFOLOG("[ DHT ANNOUNCE ]\t\t[%s] %s", dht_a->info_hash.to_string().c_str(), dht_a->ip.to_string().c_str());
-
-			}
-			else if (auto dht_r = lt::alert_cast<lt::dht_reply_alert>(a)) {
-				INFOLOG("[ DHT REPLY ]\t\t[%s] -> %d", dht_r->url.c_str(), dht_r->num_peers);
-			}
-			else {
-				INFOLOG("[ DHT REPLY ] received unknown alert type (%d)", a->type());
-			}
-		}
-		// Always check if it's time to log
-		auto now = std::chrono::steady_clock::now();
-		if (std::chrono::duration_cast<std::chrono::seconds>(now - last_log_time).count() >= 5) {
-			INFOLOG("[%s] waiting for network notifications...", get_current_datetime().c_str());
-			last_log_time = now; // Reset the timer
-		}
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(10)); // Lower CPU usage but faster loop
-	}
-}
 
 
 //==============================================================================
@@ -536,59 +340,6 @@ int dump_config_values() {
 	}
 
 	return 0;
-}
-
-std::vector<DHTNode> parseDHTNodes(const std::string& nodes) {
-	std::vector<DHTNode> result;
-	const size_t nodeSize = 26;
-	for (size_t i = 0; i + nodeSize <= nodes.size(); i += nodeSize) {
-		DHTNode node;
-		// Extract node id (20 bytes)
-		node.nodeId = nodes.substr(i, 20);
-
-		// Extract IP (4 bytes)
-		uint32_t ipRaw;
-		memcpy(&ipRaw, nodes.data() + i + 20, 4);
-		// The IP is in network byte order; use inet_ntoa to convert to string.
-		struct in_addr addr;
-		addr.s_addr = ipRaw;
-		node.ip = inet_ntoa(addr);
-
-		// Extract port (2 bytes) and convert from network to host order.
-		uint16_t portRaw;
-		memcpy(&portRaw, nodes.data() + i + 24, 2);
-		node.port = ntohs(portRaw);
-
-		result.push_back(node);
-	}
-	return result;
-}
-
-void process_dht_reply_alert(const lt::dht_reply_alert* dhtReply)
-{
-	if (dhtReply == nullptr) {
-		return;
-	}
-
-
-	// Log basic information.
-	INFOLOG("[DHT REPLY] tracker_url: %s, torrent_name: %s, num_peers %d ",dhtReply->tracker_url(),dhtReply->torrent_name(),dhtReply->num_peers);
-
-	// Assuming dhtReply->nodes is a std::string containing the compact node info.
-	/*std::string nodesPayload = dhtReply->n;  // Adjust this line if your API differs.
-	if (!nodesPayload.empty()) {
-		auto peers = parseDHTNodes(nodesPayload);
-		std::cout << "[DHT REPLY] Received " << peers.size() << " peers:" << std::endl;
-		for (const auto& peer : peers) {
-			std::cout << "   Peer IP: " << peer.ip << ", Port: " << peer.port << std::endl;
-			// Optionally, log the node ID as well:
-			// std::cout << "   Node ID: " << peer.nodeId << std::endl;
-		}
-	}
-	else {
-		std::cout << "[DHT REPLY] No nodes payload available." << std::endl;
-	}*/
-	
 }
 
 

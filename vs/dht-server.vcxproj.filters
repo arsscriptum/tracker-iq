@@ -37,6 +37,12 @@
     <ClCompile Include="$(SourcesDirectory)appsettings.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="$(SrcCommonDirectory)cthread.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SourcesDirectory)runner.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SourcesDirectory)stdafx.h">
@@ -90,6 +96,12 @@
     <ClInclude Include="$(SrcCommonDirectory)enum_to_string.h">
       <Filter>headers</Filter>
     </ClInclude>
+    <ClInclude Include="$(SrcCommonDirectory)cthread.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SourcesDirectory)runner.h">
+      <Filter>headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(DhtdConfigDir)dhtd.ini">
@@ -101,21 +113,17 @@
     <None Include="$(TiqBuildScriptsDirectory)Build.bat">
       <Filter>scripts</Filter>
     </None>
-    <None Include="..\doc\dhtsrv.md">
-      <Filter>doc</Filter>
-    </None>
     <None Include="$(ScriptsDirectory)GenerateAppVersion.ps1">
       <Filter>scripts</Filter>
     </None>
     <None Include="$(ScriptsDirectory)prepare-build.bat">
       <Filter>scripts</Filter>
     </None>
-    <None Include="..\.gitignore">
-      <Filter>misc</Filter>
-    </None>
     <None Include="$(ScriptsDirectory)post-build.bat">
       <Filter>scripts</Filter>
     </None>
+    <None Include="$(SolutionRootDirectory).gitignore" />
+    <None Include="$(DocumentationDirectory)dhtsrv.md" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
